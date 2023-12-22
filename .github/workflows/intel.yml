@@ -1,4 +1,9 @@
-name: Intel Linux Build
+# This is a GitHub actions workflow for WW3.
+#
+# This builds on the Intel compilers.
+#
+# Kyle Gerheiser, Ed Hartnett, Alex Richert
+name: Intel
 on: [push, pull_request, workflow_dispatch]
 
 # Cancel in-progress workflows when pushing to a branch

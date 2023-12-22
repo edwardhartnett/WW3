@@ -27,8 +27,6 @@ jobs:
         compilers: ["CC=icc FC=ifort CXX=icpc", "CC=icx FC=ifx CXX=icpx"]
 
     steps:
-
-    # See https://software.intel.com/content/www/us/en/develop/articles/oneapi-repo-instructions.html
     - name: install-dependencies
       run: |
         sudo apt-get update

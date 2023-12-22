@@ -1,20 +1,6 @@
 name: Intel Linux Build
 on: [push, pull_request, workflow_dispatch]
 
-# Cancel in-progress workflows when pushing to a branch
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
-# Set I_MPI_CC/F90 so Intel MPI wrapper uses icc/ifort instead of gcc/gfortran
-env:
-  cache_key: intel10
-  CC: icc
-  FC: ifort
-  CXX: icpc
-  I_MPI_CC: icc
-  I_MPI_F90: ifort
-
 # Split into a dependency build step, and a WW3 build step which
 # builds multiple switches in a matrix. The setup is run once and
 # the environment is cached so each build of WW3 can share the dependencies.

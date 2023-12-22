@@ -1,4 +1,3 @@
-# This is a GitHub actions workflow for WW3, it build with intel compilers.
 name: Intel Linux Build
 on: [push, pull_request, workflow_dispatch]
 
@@ -22,9 +21,26 @@ env:
 
 jobs:
   setup:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compilers: ["CC=icc FC=ifort CXX=icpc", "CC=icx FC=ifx CXX=icpx"]
 
     steps:
+
+      # See https://software.intel.com/content/www/us/en/develop/articles/oneapi-repo-instructions.html
+    - name: install-dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install libaec-dev libpng-dev zlib1g-dev libjpeg-dev doxygen
+        cd /tmp
+        wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+        sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+        rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+        echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+        sudo apt-get update
+        sudo apt-get install intel-oneapi-dev-utilities intel-oneapi-openmp intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
+        echo "source /opt/intel/oneapi/setvars.sh" >> ~/.bash_profile
 
       - name: checkout-ww3
         if: steps.cache-env.outputs.cache-hit != 'true'
@@ -43,16 +59,7 @@ jobs:
             ~/.spack
             work_oasis3-mct
             /opt/intel
-          key: spack-${{ runner.os }}-${{ env.cache_key }}-${{ hashFiles('ww3/model/ci/spack_intel.yaml') }}
-
-      - name: install-intel-compilers
-        if: steps.cache-env.outputs.cache-hit != 'true'
-        run: |
-          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-          sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-          echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
-          sudo apt-get update
-          sudo apt-get install intel-oneapi-dev-utilities intel-oneapi-mpi-devel intel-oneapi-openmp intel-oneapi-compiler-fortran intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic
+          key: spack-${{ runner.os }}-${{ env.cache_key }}-${{ hashFiles('ww3/model/ci/spack_intel.yaml') }}-1
 
       # Build WW3 spack environment
       - name: install-dependencies-with-spack
@@ -84,7 +91,7 @@ jobs:
           export OASIS_INPUT_PATH=${GITHUB_WORKSPACE}/ww3/regtests/ww3_tp2.14/input/oasis3-mct
           export OASIS_WORK_PATH=${GITHUB_WORKSPACE}/ww3/regtests/ww3_tp2.14/input/work_oasis3-mct
           cd ww3/regtests/ww3_tp2.14/input/oasis3-mct/util/make_dir
-          cmake .
+          ${{ matrix.compilers }} cmake .
           make
           cp -r ${GITHUB_WORKSPACE}/ww3/regtests/ww3_tp2.14/input/work_oasis3-mct ${GITHUB_WORKSPACE}
 
@@ -93,7 +100,7 @@ jobs:
     strategy:
       matrix:
         switch: [Ifremer1, NCEP_st2, NCEP_st4, ite_pdlib, NCEP_st4sbs, NCEP_glwu, OASACM, UKMO, MULTI_ESMF]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: checkout-ww3

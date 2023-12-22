@@ -1,8 +1,3 @@
-# This is a GitHub actions workflow for WW3.
-#
-# This builds on the Intel compilers.
-#
-# Kyle Gerheiser, Ed Hartnett, Alex Richert
 name: Intel Linux Build
 on: [push, pull_request, workflow_dispatch]
 

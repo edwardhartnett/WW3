@@ -28,7 +28,7 @@ jobs:
 
     steps:
 
-      # See https://software.intel.com/content/www/us/en/develop/articles/oneapi-repo-instructions.html
+    # See https://software.intel.com/content/www/us/en/develop/articles/oneapi-repo-instructions.html
     - name: install-dependencies
       run: |
         sudo apt-get update

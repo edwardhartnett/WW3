@@ -3,7 +3,7 @@
 # This builds on the Intel compilers.
 #
 # Kyle Gerheiser, Ed Hartnett, Alex Richert
-name: Intel
+name: Intel Linux Build
 on: [push, pull_request, workflow_dispatch]
 
 # Cancel in-progress workflows when pushing to a branch

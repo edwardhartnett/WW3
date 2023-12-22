@@ -22,9 +22,14 @@ env:
 jobs:
   setup:
     runs-on: ubuntu-latest
+    env:
+      CC: icc
+      FC: ifort
+      CXX: icpc
     strategy:
+      fail-fast: true
       matrix:
-        compilers: ["CC=icc FC=ifort CXX=icpc", "CC=icx FC=ifx CXX=icpx"]
+        compilers: ["CC=icc FC=ifort", "CC=icx FC=ifx"]
 
     steps:
     - name: install-dependencies

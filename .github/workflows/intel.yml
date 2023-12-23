@@ -14,7 +14,7 @@ on:
 
 # Set I_MPI_CC/F90 so Intel MPI wrapper uses icc/ifort instead of gcc/gfortran
 env:
-  cache_key: intel10
+  cache_key: intel10-1
   CC: icc
   FC: ifort
   CXX: icpc
@@ -66,7 +66,7 @@ jobs:
           ~/.spack
           work_oasis3-mct
           /opt/intel
-        key: spack-${{ runner.os }}-${{ env.cache_key }}-${{ hashFiles('ww3/model/ci/spack_intel.yaml') }}-1
+        key: spack-${{ runner.os }}-${{ env.cache_key }}-${{ hashFiles('ww3/model/ci/spack_intel.yaml') }}-2
 
     # Build WW3 spack environment
     - name: install-dependencies-with-spack
@@ -125,7 +125,7 @@ jobs:
           ~/.spack
           work_oasis3-mct
           /opt/intel
-        key: spack-${{ runner.os }}-${{ env.cache_key }}-${{ hashFiles('ww3/model/ci/spack_intel.yaml') }}
+        key: spack-${{ runner.os }}-${{ env.cache_key }}-${{ hashFiles('ww3/model/ci/spack_intel.yaml') }}-1
 
     - name: build-ww3
       run: |

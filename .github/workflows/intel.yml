@@ -1,10 +1,16 @@
-name: Intel Linux Build
-on: [push, pull_request, workflow_dispatch]
-
-# Cancel in-progress workflows when pushing to a branch
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+# This is a GitHub actions workflow for WW3.
+#
+# This builds on the Intel compilers.
+#
+# Kyle Gerheiser, Ed Hartnett, Alex Richert
+name: Intel
+on:
+  push:
+    branches:
+    - develop
+  pull_request:
+    branches:
+    - develop
 
 # Set I_MPI_CC/F90 so Intel MPI wrapper uses icc/ifort instead of gcc/gfortran
 env:
@@ -24,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        compilers: ["CC=icc FC=ifort CXX=icpc", "CC=icx FC=ifx CXX=icpx"]
+        compilers: ["CC=icc FC=ifort CXX=icpc"]
 
     steps:
 

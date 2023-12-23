@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        compilers: ["CC=icc FC=ifort CXX=icpc"]
+        compilers: ["CC=icx FC=ifx CXX=icpx"]
 
     steps:
 

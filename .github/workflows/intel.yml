@@ -37,6 +37,7 @@ jobs:
     # See https://software.intel.com/content/www/us/en/develop/articles/oneapi-repo-instructions.html
     - name: install-dependencies
       run: |
+        set -x
         sudo apt-get update
         sudo apt-get install libaec-dev libpng-dev zlib1g-dev libjpeg-dev doxygen
         cd /tmp
@@ -72,6 +73,7 @@ jobs:
       if: steps.cache-env.outputs.cache-hit != 'true'
       run: |
         # Install NetCDF, ESMF, g2, etc using Spack
+        set -x
         . /opt/intel/oneapi/setvars.sh
         git clone -c feature.manyFiles=true https://github.com/JCSDA/spack.git
         source spack/share/spack/setup-env.sh

@@ -1,4 +1,4 @@
-name: Intel Linux Build
+name: Intel_spack
 on: [push, pull_request, workflow_dispatch]
 
 # Cancel in-progress workflows when pushing to a branch
@@ -20,7 +20,7 @@ env:
 # the environment is cached so each build of WW3 can share the dependencies.
 
 jobs:
-  setup:
+  setup_intel_spack:
     runs-on: ubuntu-20.04
 
     steps:
@@ -80,7 +80,7 @@ jobs:
           make
           cp -r ${GITHUB_WORKSPACE}/ww3/regtests/ww3_tp2.14/input/work_oasis3-mct ${GITHUB_WORKSPACE}
 
-  build:
+  intel_spack:
     needs: setup
     strategy:
       matrix:

@@ -57,6 +57,7 @@ jobs:
           ln -s $(realpath $(which gcc)) spack/lib/spack/env/intel/gcc # spack/make bug in ESMF
           spack env create ww3-intel ww3/model/ci/spack_intel.yaml
           spack env activate ww3-intel
+          spack add intel-oneapi-compilers
           spack install intel-oneapi-compilers
           spack compiler add `spack location -i intel-oneapi-compilers`/compiler/latest/bin
           spack install patchelf%intel

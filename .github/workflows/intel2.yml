@@ -43,6 +43,7 @@ jobs:
         if: steps.cache-env.outputs.cache-hit != 'true'
         run: |
           # Install NetCDF, ESMF, g2, etc using Spack
+          . /opt/intel/oneapi/setvars.sh
           git clone -c feature.manyFiles=true https://github.com/JCSDA/spack.git
           source spack/share/spack/setup-env.sh
           ln -s $(realpath $(which gcc)) spack/lib/spack/env/intel/gcc # spack/make bug in ESMF
@@ -62,6 +63,7 @@ jobs:
       - name: build-oasis
         if: steps.cache-env.outputs.cache-hit != 'true'
         run: |
+          . /opt/intel/oneapi/setvars.sh
           source spack/share/spack/setup-env.sh
           spack env activate ww3-intel
           export WWATCH3_DIR=${GITHUB_WORKSPACE}/ww3/model

@@ -1,3 +1,6 @@
+# This is a GitHub actions workflow for the WW3 project.
+#
+# This workflow builds WW3 with intel compilers.
 name: Intel_spack
 on: [push, pull_request, workflow_dispatch]
 
@@ -5,15 +8,6 @@ on: [push, pull_request, workflow_dispatch]
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
-
-# Set I_MPI_CC/F90 so Intel MPI wrapper uses icc/ifort instead of gcc/gfortran
-env:
-  cache_key: intel10
-  CC: icc
-  FC: ifort
-  CXX: icpc
-  I_MPI_CC: icc
-  I_MPI_F90: ifort
 
 # Split into a dependency build step, and a WW3 build step which
 # builds multiple switches in a matrix. The setup is run once and
@@ -42,7 +36,7 @@ jobs:
             ~/.spack
             work_oasis3-mct
             /opt/intel
-          key: spack-${{ runner.os }}-${{ env.cache_key }}-${{ hashFiles('ww3/model/ci/spack_intel.yaml') }}
+          key: intel_spack-${{ runner.os }}-${{ env.cache_key }}-${{ hashFiles('ww3/model/ci/spack_intel.yaml') }}
 
       # Build WW3 spack environment
       - name: install-dependencies-with-spack
@@ -102,7 +96,7 @@ jobs:
             ~/.spack
             work_oasis3-mct
             /opt/intel
-          key: spack-${{ runner.os }}-${{ env.cache_key }}-${{ hashFiles('ww3/model/ci/spack_intel.yaml') }}
+          key: intel_spack-${{ runner.os }}-${{ env.cache_key }}-${{ hashFiles('ww3/model/ci/spack_intel.yaml') }}
 
       - name: build-ww3
         run: |

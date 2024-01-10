@@ -1,3 +1,8 @@
+# This is a GitHub actions workflow for WW3.
+#
+# This workflow builds with the Intel compilers.
+#
+# Matt Masarik, Alex Richert, Ed Hartnett
 name: Intel Linux Build
 on: [push, pull_request, workflow_dispatch]
 
@@ -8,7 +13,7 @@ concurrency:
 
 # Set I_MPI_CC/F90 so Intel MPI wrapper uses icc/ifort instead of gcc/gfortran
 env:
-  cache_key: intel10
+  cache_key: intel10-3
   CC: icc
   FC: ifort
   CXX: icpc

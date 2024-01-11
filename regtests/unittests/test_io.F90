@@ -17,8 +17,9 @@ program test_io
   character*7 expected_ptnme
   character*6 my_fmt
   real :: expected_loc_1
-
-  print *, 'Testing WW3 binary point file code.'
+  integer :: write_test_file
+  
+  print *, 'Testing WW3 netCDF point file code.'
 
   ! These are mysterious but have to be called or else the IPASS
   ! variable does not exist and w3iopo() crashes.
@@ -43,6 +44,10 @@ program test_io
   ! open(ndsi, file = 'ww3_outp.inp', status='old', iostat = ierr)
   ! if (ierr .ne. 0) stop 10
 
+  ! Create a point output file needed for this test.
+  print *, 'Creating point output test file for this test...'
+  if (write_test_file() .ne. 0) stop 1
+
   ! 2.  Read model definition file.
   CALL W3IOGR('READ', NDSM)
   WRITE (NDSO,920) GNAME
@@ -55,6 +60,8 @@ program test_io
   ! END IF
 
   ! Read the file out_pnt.ww3 from the model/tests/data directory.
+  print *, 'OK!'
+  print *, 'Reading the point output test file for this test...'
   call w3iopo('READ', ndsop, iotest)
   if (iotest .ne. 0) stop 10
   close(ndsop)
@@ -76,6 +83,14 @@ program test_io
      if (ptloc(1, i) .ne. expected_loc_1) stop 21
      expected_loc_1 = expected_loc_1 + 5000.0
      if (ptloc(2, i) .ne. 0) stop 22
+  end do
+
+  print *, 'OK!'
+  print *, 'initializing some data...'
+  do i = 1, nopts
+     do j = 1, nspec
+        spco(j, i) = 0.0
+     end do
   end do
   
   print *, 'OK!'

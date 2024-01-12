@@ -111,7 +111,7 @@ jobs:
           mv mod_def.ww3 regtests/unittests
           ctest --verbose --output-on-failure --rerun-failed
           gcovr --root .. -v  --html-details --exclude ../regtests/unittests --exclude CMakeFiles --print-summary -o test-coverage.html &> /dev/null
-          ls -l ww3/build/docs
+          ls -l docs
         
       - name: upload-test-coverage
         uses: actions/upload-artifact@v3

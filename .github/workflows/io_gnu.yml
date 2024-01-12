@@ -95,6 +95,7 @@ jobs:
 
       - name: build-ww3
         run: |
+          doxygen --version
           source spack/share/spack/setup-env.sh
           spack env activate ww3-gnu
           set -x
@@ -120,3 +121,9 @@ jobs:
             ww3/build/*.css
 
           
+      - name: upload-test-coverage
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs
+          path: |
+            ww3/build/docs/docs/html

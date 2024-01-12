@@ -119,4 +119,8 @@ jobs:
             ww3/build/*.html
             ww3/build/*.css
 
-          
+    - uses: actions/upload-artifact@v3
+      with:
+        name: docs
+        path: |
+          ww3/build/docs/docs/html

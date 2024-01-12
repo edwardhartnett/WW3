@@ -64,3 +64,9 @@ include(CTest)
 if(BUILD_TESTING)
   add_subdirectory(regtests/unittests)
 endif()
+
+# Determine whether or not to generate documentation.
+if(ENABLE_DOCS)
+  find_package(Doxygen REQUIRED)
+endif()
+add_subdirectory(docs)  

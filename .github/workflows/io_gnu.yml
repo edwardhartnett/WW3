@@ -127,4 +127,4 @@ jobs:
         with:
           name: docs
           path: |
-            ww3/build/docs/html
+            ww3/build/docs/docs/html

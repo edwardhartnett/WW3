@@ -11,6 +11,9 @@ project(
   VERSION ${pVersion}
   LANGUAGES C Fortran)
 
+# Handle user build options.
+option(ENABLE_DOCS "Enable generation of doxygen-based documentation." OFF)
+
 get_directory_property(hasParent PARENT_DIRECTORY)
 if(hasParent)
   # Unset flags that come from Parent (ie UFS or other coupled build) 

@@ -3,6 +3,7 @@
 !
 ! Ed Hartnett 1/13/24
 program test_io_restart_bin
+  use w3iorsmd
   use w3iopomd
   use w3gdatmd
   use w3wdatmd
@@ -47,7 +48,7 @@ program test_io_restart_bin
 920 FORMAT ('  Grid name : ',A/)  
 
   ! Read the file out_pnt.ww3 from the model/tests/data directory.
-  call w3iors('WRITE', ndsr, dumfpi)
+  call w3iors('HOT', ndsr, dumfpi)
   if (iotest .ne. 0) stop 10
   close(ndsop)
 

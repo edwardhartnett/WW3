@@ -31,5 +31,6 @@ copy_test_data(ww3_grid.inp)
 # Build and run the tests.
 unit_test(test_io_points_bin)
 #unit_test(test_io)
+unit_test(test_io_restart_bin)
 
 

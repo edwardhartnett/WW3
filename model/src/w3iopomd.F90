@@ -122,19 +122,19 @@ MODULE W3IOPOMD
   !> Dimension name for the netCDF point output file, for NOPTS, the
   !> Number of Output Points.
   character(*), parameter, private :: DNAME_NOPTS = 'NOPTS'
-  
+
   !> Dimension name for the netCDF point output file, for NSPEC.
   character(*), parameter, private :: DNAME_NSPEC = 'NSPEC'
-  
+
   !> Dimension name for the netCDF point output file, for VSIZE. This
   !> is for the vector size for points, which is 2.
   character(*), parameter, private :: DNAME_VSIZE = 'VSIZE'
-  
+
   !> Dimension name for the netCDF point output file, for
   !> NAMELEN. This is the length of the PTNME strings, which contains
   !> the names of the points.
   character(*), parameter, private :: DNAME_NAMELEN = 'NAMELEN'
-  
+
   !> Dimension name for the netCDF point output file, for GRDIDLEN,
   !> this is the length of the GRDID character array.
   character(*), parameter, private :: DNAME_GRDIDLEN = 'GRDIDLEN'
@@ -204,7 +204,7 @@ MODULE W3IOPOMD
 
   !> Variable name for the netCDF point output file, for SPCO.
   character(*), parameter, private :: VNAME_SPCO = 'SPCO'
-  
+
   !/
 CONTAINS
   !/ ------------------------------------------------------------------- /
@@ -1141,8 +1141,8 @@ CONTAINS
     character(*), intent(in) :: filename
     integer, intent(inout) :: ncerr
     integer :: fh
-    integer :: d_nopts, d_nspec, d_vsize, d_namelen, d_grdidlen    
-    integer :: d_nopts_len, d_nspec_len, d_vsize_len, d_namelen_len, d_grdidlen_len    
+    integer :: d_nopts, d_nspec, d_vsize, d_namelen, d_grdidlen
+    integer :: d_nopts_len, d_nspec_len, d_vsize_len, d_namelen_len, d_grdidlen_len
     integer :: v_idtst, v_vertst, v_nk, v_mth, v_ptloc, v_ptnme
     integer :: v_iw, v_ii, v_il, v_dpo, v_wao, v_wdo, v_tauao
     integer :: v_taido, v_dairo, v_zet_seto, v_aso, v_cao, v_cdo, v_iceo
@@ -1150,7 +1150,7 @@ CONTAINS
 
     print *,filename
     IOTST = 0
-    
+
     ! Open the netCDF file.
     ncerr = nf90_open(filename, NF90_NOWRITE, fh)
     if (ncerr .ne. 0) return
@@ -1241,13 +1241,13 @@ CONTAINS
     if (ncerr .ne. 0) return
     ncerr = nf90_get_var(fh, v_dairo, DAIRO)
     if (ncerr .ne. 0) return
-#endif    
+#endif
 #ifdef W3_SETUP
     ncerr = nf90_inq_varid(fh, ZET_SETO, v_zet_seto)
     if (ncerr .ne. 0) return
     ncerr = nf90_get_var(fh, v_zet_seto, ZET_SETO)
     if (ncerr .ne. 0) return
-#endif    
+#endif
     ncerr = nf90_inq_varid(fh, VNAME_ASO, v_aso)
     if (ncerr .ne. 0) return
     ncerr = nf90_get_var(fh, v_aso, ASO)
@@ -1280,11 +1280,11 @@ CONTAINS
     if (ncerr .ne. 0) return
     ncerr = nf90_get_var(fh, v_spco, SPCO)
     if (ncerr .ne. 0) return
-    
+
     ! Close the file.
     ncerr = nf90_close(fh)
     if (ncerr .ne. 0) return
-    
+
   END SUBROUTINE W3IOPON_READ
 
   !/ ------------------------------------------------------------------- /
@@ -1313,7 +1313,7 @@ CONTAINS
 #ifdef W3_SETUP
     USE W3ODATMD, ONLY: ZET_SETO
 #endif
-    
+
     IMPLICIT NONE
     integer, intent(in) :: timestep_only ! 1 if only timestep should be written.
     INTEGER, INTENT(IN) :: IMOD
@@ -1329,7 +1329,7 @@ CONTAINS
     CHARACTER(LEN=31), PARAMETER :: IDSTR = 'WAVEWATCH III POINT OUTPUT FILE'
     CHARACTER(LEN=10), PARAMETER :: VEROPT = '2021-04-06'
 
-    print *, 'WRITE ',filename, len(filename)
+!!!MTM    print *, 'WRITE ',filename, len(filename)
 
     ! Create the netCDF file.
     ncerr = nf90_create(filename, NF90_NETCDF4, fh)
@@ -1352,7 +1352,7 @@ CONTAINS
     if (ncerr .ne. 0) return
     ncerr = nf90_put_att(fh, NF90_GLOBAL, 'version', VEROPT)
     if (ncerr .ne. 0) return
-    
+
     ! Define scalar variables.
     ncerr = nf90_def_var(fh, VNAME_NK, NF90_INT, v_nk)
     if (ncerr .ne. 0) return
@@ -1383,11 +1383,11 @@ CONTAINS
     if (ncerr .ne. 0) return
     ncerr = nf90_def_var(fh, VNAME_DAIRO, NF90_INT, (/d_nopts/), v_dairo)
     if (ncerr .ne. 0) return
-#endif    
+#endif
 #ifdef W3_SETUP
     ncerr = nf90_def_var(fh, VNAME_ZET_SETO, NF90_INT, (/d_nopts/), v_zet_seto)
     if (ncerr .ne. 0) return
-#endif    
+#endif
     ncerr = nf90_def_var(fh, VNAME_ASO, NF90_INT, (/d_nopts/), v_aso)
     if (ncerr .ne. 0) return
     ncerr = nf90_def_var(fh, VNAME_CAO, NF90_INT, (/d_nopts/), v_cao)
@@ -1539,7 +1539,7 @@ CONTAINS
    filename = ''
    filename = transfer(FNMPRE(:LEN_TRIM(FNMPRE))//'out_pnt_nc.'//FILEXT(:LEN_TRIM(FILEXT)), filename)
    !print *, filename
-   
+
    ! Do a read or a write of the point file.
    IF (INXOUT .EQ. 'READ') THEN
       CALL W3IOPON_READ(IOTST, IMOD, filename, ncerr)
@@ -1548,9 +1548,9 @@ CONTAINS
    ENDIF
    if (ncerr .ne. 0) then
       print *, nf90_strerror(ncerr)
-      CALL EXTCDE(21)      
+      CALL EXTCDE(21)
    endif
-   
+
     !/
     !/ End of W3IOPON ----------------------------------------------------- /
     !/
@@ -1558,7 +1558,7 @@ CONTAINS
 900 FORMAT (/' *** WAVEWATCH III ERROR IN W3IOPO :'/                &
          '     ILEGAL INXOUT VALUE: ',A/)
   END SUBROUTINE W3IOPON
- 
+
   !/ ------------------------------------------------------------------- /
   !> Read or write point output.
   !>

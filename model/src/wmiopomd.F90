@@ -714,7 +714,9 @@ CONTAINS
     USE W3ODATMD, ONLY: W3SETO
     USE WMMDATMD, ONLY: WMSETM
     USE W3CSPCMD, ONLY: W3CSPC
-    USE W3IOPOMD, ONLY: W3IOPO
+    USE W3IOPOMD
+    USE netcdf
+    !!! MTM
     !
     USE W3GDATMD, ONLY: NK, NTH, NSPEC, XFR, FR1, TH, SGRDS
     USE W3WDATMD, ONLY: TIME
@@ -1176,9 +1178,9 @@ CONTAINS
     !
     TIME   = TOUT
     !
-    CALL W3IOPO ( 'WRITE', MDSUP, II, 0 &
+    CALL W3IOPON ( 'WRITE', MDSUP, II, 0 &
 #ifdef W3_ASCII
-            ,MDSUPA                     &                  
+            ,MDSUPA                     &
 #endif
             )
     !

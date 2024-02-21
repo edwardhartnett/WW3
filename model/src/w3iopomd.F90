@@ -1122,7 +1122,7 @@ CONTAINS
   !> @author Edward Hartnett  @date 1-Nov-2023
   !>
   SUBROUTINE W3IOPON_READ(IOTST, IMOD, filename, ncerr)
-    use netcdf
+    USE NetCDF
     USE W3GDATMD, ONLY: NTH, NK, NSPEC, FILEXT
     USE W3ODATMD, ONLY: NDST, NDSE, IPASS => IPASS2, NOPTS, IPTINT, &
          IL, IW, II, PTLOC, PTIFAC, DPO, WAO, WDO,   &
@@ -1148,7 +1148,6 @@ CONTAINS
     integer :: v_taido, v_dairo, v_zet_seto, v_aso, v_cao, v_cdo, v_iceo
     integer :: v_iceho, v_icefo, v_grdid, v_spco
 
-    print *,filename
     IOTST = 0
 
     ! Open the netCDF file.
@@ -1325,11 +1324,8 @@ CONTAINS
     integer :: v_iw, v_ii, v_il, v_dpo, v_wao, v_wdo, v_tauao
     integer :: v_taido, v_dairo, v_zet_seto, v_aso, v_cao, v_cdo, v_iceo
     integer :: v_iceho, v_icefo, v_grdid, v_spco
-    character (len = *), parameter :: FILE_NAME = "f90tst_nc4.nc"
     CHARACTER(LEN=31), PARAMETER :: IDSTR = 'WAVEWATCH III POINT OUTPUT FILE'
     CHARACTER(LEN=10), PARAMETER :: VEROPT = '2021-04-06'
-
-!!!MTM    print *, 'WRITE ',filename, len(filename)
 
     ! Create the netCDF file.
     ncerr = nf90_create(filename, NF90_NETCDF4, fh)
@@ -1537,8 +1533,7 @@ CONTAINS
 
    ! Determine filename.
    filename = ''
-   filename = transfer(FNMPRE(:LEN_TRIM(FNMPRE))//'out_pnt_nc.'//FILEXT(:LEN_TRIM(FILEXT)), filename)
-   !print *, filename
+   filename = transfer(FNMPRE(:LEN_TRIM(FNMPRE))//'out_pnt.'//FILEXT(:LEN_TRIM(FILEXT))//'.nc', filename)
 
    ! Do a read or a write of the point file.
    IF (INXOUT .EQ. 'READ') THEN

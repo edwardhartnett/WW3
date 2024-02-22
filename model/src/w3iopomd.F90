@@ -65,7 +65,7 @@ MODULE W3IOPOMD
   !      Name      Type  Scope    Description
   !     ----------------------------------------------------------------
   !      VEROPT    C*10  Private  Point output file version number.
-  !      IDSTR     C*32  Private  Point output file ID string.
+  !      IDSTR     C*31  Private  Point output file ID string.
   !     ----------------------------------------------------------------
   !
   !  3. Subroutines and functions :
@@ -1324,8 +1324,8 @@ CONTAINS
     integer :: v_iw, v_ii, v_il, v_dpo, v_wao, v_wdo, v_tauao
     integer :: v_taido, v_dairo, v_zet_seto, v_aso, v_cao, v_cdo, v_iceo
     integer :: v_iceho, v_icefo, v_grdid, v_spco
-    CHARACTER(LEN=31), PARAMETER :: IDSTR = 'WAVEWATCH III POINT OUTPUT FILE'
-    CHARACTER(LEN=10), PARAMETER :: VEROPT = '2021-04-06'
+!!JDM - defined in module above    CHARACTER(LEN=31), PARAMETER :: IDSTR = 'WAVEWATCH III POINT OUTPUT FILE'
+!!JDM - defined in module above    CHARACTER(LEN=10), PARAMETER :: VEROPT = '2021-04-06'
 
     ! Create the netCDF file.
     ncerr = nf90_create(filename, NF90_NETCDF4, fh)
@@ -1576,8 +1576,8 @@ CONTAINS
   !> -------------|------|----------|--------
   !> 40 | character*40 | IDTST | ID string
   !> 4 | integer | VERTST | Model definition file version number
-  !> 4 | integer | NK | Dimension of frequency
-  !> 4 | integer | MTH | Directionality of the frequency
+  !> 4 | integer | NK | Number of discrete wavenumbers  
+  !> 4 | integer | NTH | Number of discrete directions. 
   !> 4 | integer | NOPTS | Number of output points.
   !> 8*NOPTS | integer(2,NOPTS) | PTLOC | Point locations
   !> 7*NOPTS | character*7 | PTNME | Point names
@@ -1785,7 +1785,7 @@ CONTAINS
       CALL EXTCDE ( 1 )
     END IF
     !
-    !      IF ( IPASS.EQ.1 ) THEN
+    ! First pass to this file and we are only writing 1 file for all time     
     IF ( IPASS.EQ.1  .AND. OFILES(2) .EQ. 0) THEN
       WRITE  = INXOUT.EQ.'WRITE'
     ELSE
@@ -1798,10 +1798,10 @@ CONTAINS
     ! open file ---------------------------------------------------------- *
     !
     IF ( IPASS.EQ.1 .AND. OFILES(2) .EQ. 0 ) THEN
-      !
+
       I      = LEN_TRIM(FILEXT)
       J      = LEN_TRIM(FNMPRE)
-      !
+
 #ifdef W3_T
       WRITE (NDST,9001) FNMPRE(:J)//'out_pnt.'//FILEXT(:I)
 #endif
@@ -1920,7 +1920,7 @@ CONTAINS
       !
       IF ( WRITE ) THEN
         WRITE (NDSOP)                                           &
-             IDSTR, VEROPT, NK, NTH, NOPTS
+             eDSTR, VEROPT, NK, NTH, NOPTS
 #ifdef W3_ASCII
         WRITE (NDSOA,*)                                           &
              'IDSTR, VEROPT, NK, NTH, NOPTS:',                  &
@@ -1942,6 +1942,7 @@ CONTAINS
           WRITE (NDSE,904) MK, MTH, NK, NTH
           CALL EXTCDE ( 12 )
         END IF
+        !JDM: what is this???? 
         IF ( .NOT. O2INIT )                                     &
              CALL W3DMO2 ( IGRD, NDSE, NDST, NOPTS )
       END IF

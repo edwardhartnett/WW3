@@ -139,6 +139,10 @@ MODULE W3IOPOMD
   !> this is the length of the GRDID character array.
   character(*), parameter, private :: DNAME_GRDIDLEN = 'GRDIDLEN'
 
+  !> Dimension name for the netCDF point output file, for TIME. This
+  !> is unlimited dimensions. 
+  character(*), parameter, private :: DNAME_TIME = 'TIME'
+
   !> Variable name for the netCDF point output file, for NK.
   character(*), parameter, private :: VNAME_NK = 'NK'
 
@@ -150,6 +154,9 @@ MODULE W3IOPOMD
 
   !> Variable name for the netCDF point output file, for PTNME.
   character(*), parameter, private :: VNAME_PTNME = 'PTNME'
+
+  !> Variable name for the netCDF point output file, for TIME. 
+  character(*), parameter, private :: VNAME_TIME = 'TIME'
 
   !> Variable name for the netCDF point output file, for IW.
   character(*), parameter, private :: VNAME_IW = 'IW'
@@ -1352,7 +1359,7 @@ CONTAINS
     character(*), intent(in) :: filename
     integer, intent(inout) :: ncerr
     integer :: fh, ndim, nvar, fmt
-    integer :: d_nopts, d_nspec, d_vsize, d_namelen, d_grdidlen
+    integer :: d_nopts, d_nspec, d_vsize, d_namelen, d_grdidlen, d_time
     integer :: v_idtst, v_vertst, v_nk, v_nth, v_ptloc, v_ptnme
     integer :: v_iw, v_ii, v_il, v_dpo, v_wao, v_wdo, v_tauao
     integer :: v_taido, v_dairo, v_zet_seto, v_aso, v_cao, v_cdo, v_iceo
@@ -1377,7 +1384,8 @@ CONTAINS
       if (ncerr .ne. 0) return
       ncerr = nf90_def_dim(fh, DNAME_GRDIDLEN, 13, d_grdidlen)
       if (ncerr .ne. 0) return
-      !TO DO: Missing dimension, time! 
+      ncerr = nf90_def_dim(fh, DNAME_TIME, NF90_UNLIMITED, d_time)
+      if (ncerr .ne. 0) return
 
       ! Define global attributes.
       ncerr = nf90_put_att(fh, NF90_GLOBAL, 'title', IDSTR)
@@ -1399,7 +1407,7 @@ CONTAINS
       
       !TO DO : Starting here all the varibles below should have a time
       !dimension: 
-      ncerr = nf90_def_var(fh, VNAME_IW, NF90_INT, (/d_nopts/), v_iw)
+      ncerr = nf90_def_var(fh, VNAME_IW, NF90_INT, (/d_nopts, d_time/), v_iw)
       if (ncerr .ne. 0) return
       ncerr = nf90_def_var(fh, VNAME_II, NF90_INT, (/d_nopts/), v_ii)
       if (ncerr .ne. 0) return

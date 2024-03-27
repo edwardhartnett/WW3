@@ -139,6 +139,9 @@ MODULE W3IOPOMD
   !> this is the length of the GRDID character array.
   character(*), parameter, private :: DNAME_GRDIDLEN = 'GRDIDLEN'
 
+  !> Dimension name for the netCDF point output file, for TIME.
+  character(*), parameter, private :: DNAME_TIME = 'TIME'
+
   !> Variable name for the netCDF point output file, for NK.
   character(*), parameter, private :: VNAME_NK = 'NK'
 
@@ -1320,7 +1323,7 @@ CONTAINS
     character(*), intent(in) :: filename
     integer, intent(inout) :: ncerr
     integer :: fh, ndim, nvar, fmt
-    integer :: d_nopts, d_nspec, d_vsize, d_namelen, d_grdidlen
+    integer :: d_nopts, d_nspec, d_vsize, d_namelen, d_grdidlen, d_time
     integer :: v_idtst, v_vertst, v_nk, v_mth, v_ptloc, v_ptnme
     integer :: v_iw, v_ii, v_il, v_dpo, v_wao, v_wdo, v_tauao
     integer :: v_taido, v_dairo, v_zet_seto, v_aso, v_cao, v_cdo, v_iceo
@@ -1346,6 +1349,8 @@ CONTAINS
     if (ncerr .ne. 0) return
     ncerr = nf90_def_dim(fh, DNAME_GRDIDLEN, 13, d_grdidlen)
     if (ncerr .ne. 0) return
+    ncerr = nf90_def_dim(fh, DNAME_TIME, NF90_UNLIMITED, d_time)
+    if (ncerr .ne. 0) return
 
     ! Define global attributes.
     ncerr = nf90_put_att(fh, NF90_GLOBAL, 'title', IDSTR)
@@ -1364,45 +1369,45 @@ CONTAINS
     if (ncerr .ne. 0) return
     ncerr = nf90_def_var(fh, VNAME_PTNME, NF90_CHAR, (/d_namelen, d_nopts/), v_ptnme)
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_IW, NF90_INT, (/d_nopts/), v_iw)
+    ncerr = nf90_def_var(fh, VNAME_IW, NF90_INT, (/d_nopts, d_time/), v_iw)
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_II, NF90_INT, (/d_nopts/), v_ii)
+    ncerr = nf90_def_var(fh, VNAME_II, NF90_INT, (/d_nopts, d_time/), v_ii)
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_IL, NF90_INT, (/d_nopts/), v_il)
+    ncerr = nf90_def_var(fh, VNAME_IL, NF90_INT, (/d_nopts, d_time/), v_il)
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_DPO, NF90_INT, (/d_nopts/), v_dpo)
+    ncerr = nf90_def_var(fh, VNAME_DPO, NF90_INT, (/d_nopts, d_time/), v_dpo)
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_WAO, NF90_INT, (/d_nopts/), v_wao)
+    ncerr = nf90_def_var(fh, VNAME_WAO, NF90_INT, (/d_nopts, d_time/), v_wao)
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_WDO, NF90_INT, (/d_nopts/), v_wdo)
+    ncerr = nf90_def_var(fh, VNAME_WDO, NF90_INT, (/d_nopts, d_time/), v_wdo)
     if (ncerr .ne. 0) return
 #ifdef W3_FLX5
-    ncerr = nf90_def_var(fh, VNAME_TAUAO, NF90_INT, (/d_nopts/), v_tauao)
+    ncerr = nf90_def_var(fh, VNAME_TAUAO, NF90_INT, (/d_nopts, d_time/), v_tauao)
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_TAIDO, NF90_INT, (/d_nopts/), v_taido)
+    ncerr = nf90_def_var(fh, VNAME_TAIDO, NF90_INT, (/d_nopts, d_time/), v_taido)
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_DAIRO, NF90_INT, (/d_nopts/), v_dairo)
+    ncerr = nf90_def_var(fh, VNAME_DAIRO, NF90_INT, (/d_nopts, d_time/), v_dairo)
     if (ncerr .ne. 0) return
 #endif    
 #ifdef W3_SETUP
-    ncerr = nf90_def_var(fh, VNAME_ZET_SETO, NF90_INT, (/d_nopts/), v_zet_seto)
+    ncerr = nf90_def_var(fh, VNAME_ZET_SETO, NF90_INT, (/d_nopts, d_time/), v_zet_seto)
     if (ncerr .ne. 0) return
 #endif    
-    ncerr = nf90_def_var(fh, VNAME_ASO, NF90_INT, (/d_nopts/), v_aso)
+    ncerr = nf90_def_var(fh, VNAME_ASO, NF90_INT, (/d_nopts, d_time/), v_aso)
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_CAO, NF90_INT, (/d_nopts/), v_cao)
+    ncerr = nf90_def_var(fh, VNAME_CAO, NF90_INT, (/d_nopts, d_time/), v_cao)
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_CDO, NF90_INT, (/d_nopts/), v_cdo)
+    ncerr = nf90_def_var(fh, VNAME_CDO, NF90_INT, (/d_nopts, d_time/), v_cdo)
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_ICEO, NF90_INT, (/d_nopts/), v_iceo)
+    ncerr = nf90_def_var(fh, VNAME_ICEO, NF90_INT, (/d_nopts, d_time/), v_iceo)
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_ICEHO, NF90_INT, (/d_nopts/), v_iceho)
+    ncerr = nf90_def_var(fh, VNAME_ICEHO, NF90_INT, (/d_nopts, d_time/), v_iceho)
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_ICEFO, NF90_INT, (/d_nopts/), v_icefo)
+    ncerr = nf90_def_var(fh, VNAME_ICEFO, NF90_INT, (/d_nopts, d_time/), v_icefo)
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_GRDID, NF90_CHAR, (/d_grdidlen, d_nopts/), v_grdid)
+    ncerr = nf90_def_var(fh, VNAME_GRDID, NF90_CHAR, (/d_grdidlen, d_nopts, d_time/), v_grdid)
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_SPCO, NF90_INT, (/d_nspec, d_nopts/), v_spco)
+    ncerr = nf90_def_var(fh, VNAME_SPCO, NF90_INT, (/d_nspec, d_nopts, d_time/), v_spco)
     if (ncerr .ne. 0) return
 
     ! Write the scalar data.

@@ -24,7 +24,7 @@ endfunction()
 
 # Function to build and run a test.
 function(unit_test name)
-  add_executable(${name} ${name}.F90)
+  add_executable(${name} ${name}.F90 ww3_unittest_util.F90)
   target_link_libraries(${name} PRIVATE ww3_lib)
   add_test(NAME ${name} COMMAND ${name})
 endfunction()

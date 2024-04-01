@@ -24,7 +24,7 @@ endfunction()
 
 # Function to build and run a test.
 function(unit_test name)
-  add_executable(${name} ${name}.F90)
+  add_executable(${name} ${name}.F90 ww3_unittest_util.F90)
   target_link_libraries(${name} PRIVATE ww3_lib)
   add_test(NAME ${name} COMMAND ${name})
 endfunction()
@@ -35,5 +35,7 @@ copy_test_data_2(ww3_grid.inp ww3_grid.inp)
 
 # Build and run the tests.
 unit_test(test_io_points_bin)
+unit_test(test_io)
+unit_test(test_io_restart_bin)
 
 

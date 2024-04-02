@@ -1327,8 +1327,6 @@ CONTAINS
          '     ERROR IN SPECTRA, MK, MTH : ',2I8/               &
          '              ARRAY DIMENSIONS : ',2I8/)
 
-
->>>>>>> ec1dc8446bddf15c62ce8978bb0269d2ee92493e
   END SUBROUTINE W3IOPON_READ
 
   !/ ------------------------------------------------------------------- /

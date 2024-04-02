@@ -632,13 +632,317 @@ These are the steps:
 There is a script called run_cmake_test. It seems relevant:
 
 <pre>
-ed@Pooh-Bah:~/ww3/regtests$ ./bin/run_cmake_test ~/ww3 ww3_tp1.1
- 
- Running now options: run_cmake_test /home/ed/ww3 ww3_tp1.1
- 
 
-ERROR: /home/ed/ww3/tools not found
-</pre>
+ed@Pooh-Bah:~/ww3/regtests$ ./bin/run_cmake_test -o all -S -T -s PR1_MPI -w work_PR1_MPI              -f -p mpirun -n 24 ../model ww3_tp2.1
+ 
+ Running now options: run_cmake_test -o all -S -T -s PR1_MPI -w work_PR1_MPI -f -p mpirun -n 24 ../model ww3_tp2.1
+ 
+   Building WW3, exes will be in /home/ed/ww3/regtests/ww3_tp2.1/work_PR1_MPI/exe
+   Build log is in /home/ed/ww3/regtests/ww3_tp2.1/work_PR1_MPI/build.log
+ 
+ 
+                    ==================================   
+                  ======> TEST RUN WAVEWATCH III <====== 
+                    ==================================   
+ 
+#############################################################################
+#                                                                           #
+# ww3_tp2.1 Test script for WW-III, two-dimensional propagation.            #
+#           Propagation under angle with grid.                              #
+#                                                                           #
+# Model should be compiled with the switches :                              #
+#                                                                           #
+#   !/LN0 !/ST0 !/NL0 !/BT0 !/DB0 !/TR0 !/BS0                               #
+#                        Select the 'no source terms' option.               #
+#   !/PRn                Selecting one of the propagation schemes.          #
+#                         1: First order.                                   #
+#                         2: UQ with diffusion term.                        #
+#                         3: UQ with averaging.                             #
+#   !/WNX1 !/WNT1 !/CRX1 !/CRT1      Wind and current interpolation.        #
+#   !/O0 !/O1 !/O2 !/O3 !/O4 !/O5 !/O6 !/O7   Sdt out output options.       #
+#                                                                           #
+# Remarks :                                                                 #
+#                                                                           #
+# - Test case input (default):                                              #
+#   * ww3_grid.inp : (default)                                              #
+#     + Spatial grid: 43 x 43 rectilinear Cartesian grid                    #
+#       - dx = 1 km, dy = 1 km                                              #
+#       - Xrange = -60:360 km, Yrange = -60:360 km                          #
+#       - land mask defined                                                 #
+#     + Spectral grid: ntheta = 24, nf =  3, f1 = 0.03679, fgamma = 1.1     #
+#   * ww3_grid_b.inp :                                                      #
+#     + Spatial grid: 273 x 274 rectilinear Cartesian grid                  #
+#       - dx = 16 km, dy = 16 km                                            #
+#       - Xrange = 0:4352 km, Yrange = 0:4368 km                            #
+#       - no land mask defined                                              #
+#     + Spectral grid: ntheta = 12, nf =  3, f1 = 0.03679, fgamma = 1.1     #
+#   * ww3_grid_c.inp :                                                      #
+#     + Spatial grid: 226 x 331 curvilinear Cartesian grid                  #
+#       - dx and dy are variable                                            #
+#       - Xrange = 1040.39:7000.00 km, Yrange = 2000.00:7959.61 km          #
+#       - input grid coordinates: <x,y>grd.IDLA1.dat                        #
+#       - no land mask defined                                              #
+#     + Spectral grid: ntheta = 12, nf =  3, f1 = 0.03679, fgamma = 1.1     #
+#   * map2_1.gs: GrADS script for the default grid.                         #
+#   * switch options (mostly self-explanatory).                             #
+#     + switch_PR1      : First order scheme                                #
+#     + switch_PR2_UNO  : UNO scheme with diffusion (off)                   #
+#     + switch_PR2_UQ   : UQ scheme with diffusion (off)                    #
+#     + switch_PR3_UNO  : UNO scheme with averaging (off)                   #
+#     + switch_PR3_UQ   : UQ scheme with averaging (off) (default)          #
+#     + switch_PR1_MPI                                                      #
+#     + switch_PR2_UNO_MPI                                                  #
+#     + switch_PR2_UQ_MPI                                                   #
+#     + switch_PR3_UNO_MPI                                                  #
+#     + switch_PR3_UQ_MPI                                                   #
+#                                                                           #
+#  Sample run_test commands :                                               #
+#   (Note: mpirun commands differ by local system)                          #
+#  ./bin/run_test                             -s PR1   ../model ww3_tp2.1   #
+#  ./bin/run_test -n 3 -p mpirun -f           -s PR1   ../model ww3_tp2.1   # 
+#  ./bin/run_test -g c        -n 3 -p mpirun -s PR3_UQ_MPI \                #          
+#       -w work_c_curv ../model ww3_tp2.1                                   #
+#  ./bin/run_test -g b_pseudo -n 3 -p mpirun -s PR3_UQ_MPI \                #          
+#       -w work_b_curv ../model ww3_tp2.1                                   #
+#                                                                           #
+#                                              Hendrik Tolman, Jun 2002     #
+#                                                   Last Mod : Dec 2013     #
+#                                                                           #
+#    Copyright 2009-2013 National Weather Service (NWS),                    #
+#       National Oceanic and Atmospheric Administration.  All rights        #
+#       reserved.  WAVEWATCH III is a trademark of the NWS.                 #
+#       No unauthorized use without permission.                             #
+#                                                                           #
+#############################################################################
+ 
+ Input directory: /home/ed/ww3/regtests/ww3_tp2.1/input
+ Switch file: /home/ed/ww3/regtests/ww3_tp2.1/input/switch_PR1_MPI
+ 
+ 
++--------------------+
+|  Grid preprocessor |
++--------------------+
+ 
+   Processing /home/ed/ww3/regtests/ww3_tp2.1/input/ww3_grid.inp
+   Screen output routed to /home/ed/ww3/regtests/ww3_tp2.1/work_PR1_MPI/ww3_grid.out
+ 
++--------------------+
+| Initial conditions |
++--------------------+
+ 
+   Processing /home/ed/ww3/regtests/ww3_tp2.1/input/ww3_strt.inp
+   Screen output routed to /home/ed/ww3/regtests/ww3_tp2.1/work_PR1_MPI/ww3_strt.out
+ 
++--------------------+
+|    Main program    |
++--------------------+
+ 
+   Processing /home/ed/ww3/regtests/ww3_tp2.1/input/ww3_shel.inp
+   Screen output copied to /home/ed/ww3/regtests/ww3_tp2.1/work_PR1_MPI/ww3_shel.out
+
+                     *** WAVEWATCH III Program shell ***      
+               ===============================================
+
+  Comment character is '$'
+
+
+  Input fields : 
+ --------------------------------------------------
+       water levels   ---/NO                      
+       currents       ---/NO                      
+       winds          ---/NO                      
+       ice fields     ---/NO                      
+       momentum       ---/NO                      
+       air density    ---/NO                      
+       mean param.    ---/NO                      
+       1D spectra     ---/NO                      
+       2D spectra     ---/NO                      
+ 
+            Fields   : Wave height         
+                       Peak frequency      
+                       Mean wave dir. a1b1 
+                       Peak direction      
+            Fields   : no fields defined
+
+  Initializations :
+ --------------------------------------------------
+
+  Time interval : 
+ --------------------------------------------------
+       Starting time : 1968/06/06 00:00:00 UTC
+       Ending time   : 1968/06/06 05:00:00 UTC
+
+
+  Output requests : 
+ --------------------------------------------------
+       No dedicated output process, any file system.
+
+       Type 1 : Fields of mean wave parameters
+      -----------------------------------------
+            From     : 1968/06/06 00:00:00 UTC
+            To       : 1968/06/08 00:00:00 UTC
+            Interval :            00:06:00
+
+            output dates out of run dates : Restart files second request deactivated
+       Wave model ...
+
+  Running model without input fields
+ --------------------------------------------------
+
+  WAVEWATCH III calculating for 1968/06/06 00:00:00 UTC at 06:08:54
+
+ *** WAVEWATCH III WARNING IN W3IOBC : 
+     INPUT FILE WITH BOUNDARY CONDITIONS NOT FOUND
+     BOUNDARY CONDITIONS WILL NOT BE UPDATED     1
+
+  WAVEWATCH III calculating for 1968/06/06 00:06:00 UTC at 06:08:54
+  WAVEWATCH III calculating for 1968/06/06 00:12:00 UTC at 06:08:54
+  WAVEWATCH III calculating for 1968/06/06 00:18:00 UTC at 06:08:54
+  WAVEWATCH III calculating for 1968/06/06 00:24:00 UTC at 06:08:54
+  WAVEWATCH III calculating for 1968/06/06 00:30:00 UTC at 06:08:54
+  WAVEWATCH III calculating for 1968/06/06 00:36:00 UTC at 06:08:54
+  WAVEWATCH III calculating for 1968/06/06 00:42:00 UTC at 06:08:54
+  WAVEWATCH III calculating for 1968/06/06 00:48:00 UTC at 06:08:54
+  WAVEWATCH III calculating for 1968/06/06 00:54:00 UTC at 06:08:54
+  WAVEWATCH III calculating for 1968/06/06 01:00:00 UTC at 06:08:54
+  WAVEWATCH III calculating for 1968/06/06 01:06:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 01:12:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 01:18:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 01:24:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 01:30:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 01:36:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 01:42:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 01:48:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 01:54:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 02:00:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 02:06:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 02:12:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 02:18:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 02:24:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 02:30:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 02:36:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 02:42:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 02:48:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 02:54:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 03:00:00 UTC at 06:08:55
+  WAVEWATCH III calculating for 1968/06/06 03:06:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 03:12:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 03:18:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 03:24:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 03:30:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 03:36:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 03:42:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 03:48:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 03:54:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 04:00:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 04:06:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 04:12:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 04:18:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 04:24:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 04:30:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 04:36:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 04:42:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 04:48:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 04:54:00 UTC at 06:08:56
+  WAVEWATCH III calculating for 1968/06/06 05:00:00 UTC at 06:08:56
+  WAVEWATCH III reached the end of a computation loop at 06:08:56
+
+  Initialization time :      0.79 s
+  Elapsed time        :      3.09 s
+
+  End of program 
+ ====================================
+         WAVEWATCH III Program shell 
+
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+[WARNING] yaksa: 2 leaked handle pool objects
+ 
++--------------------+
+|   Gridded output   |
++--------------------+
+ 
+   Processing /home/ed/ww3/regtests/ww3_tp2.1/input/ww3_outf_flds_hrly.inp
+   Screen output routed to /home/ed/ww3/regtests/ww3_tp2.1/work_PR1_MPI/ww3_outf_flds_hrly.out
+   Processing /home/ed/ww3/regtests/ww3_tp2.1/input/ww3_outf.inp
+   Screen output routed to /home/ed/ww3/regtests/ww3_tp2.1/work_PR1_MPI/ww3_outf.out
+ 
++--------------------+
+| NC Gridded output  |
++--------------------+
+ 
+   Processing /home/ed/ww3/regtests/ww3_tp2.1/input/ww3_ounf_flds_hrly.inp
+   Screen output routed to /home/ed/ww3/regtests/ww3_tp2.1/work_PR1_MPI/ww3_ounf_flds_hrly.out
+   Processing /home/ed/ww3/regtests/ww3_tp2.1/input/ww3_ounf.inp
+   Screen output routed to /home/ed/ww3/regtests/ww3_tp2.1/work_PR1_MPI/ww3_ounf.out
+ 
+ 
+Files in /home/ed/ww3/regtests/ww3_tp2.1/work_PR1_MPI :
+ 
+total 3024
+drwxrwxr-x 9 ed ed    4096 Apr  2 06:08 build
+-rw-rw-r-- 1 ed ed  395213 Apr  2 06:08 build.log
+drwxrwxr-x 9 ed ed    4096 Apr  2 06:07 build_SHRD
+drwxrwxr-x 2 ed ed    4096 Apr  2 06:07 exe
+-rw-rw-r-- 1 ed ed      32 Apr  2 06:08 finished
+-rw-rw-r-- 1 ed ed    5649 Apr  2 06:08 log.ww3
+-rw-rw-r-- 1 ed ed   47737 Apr  2 06:08 mod_def.ww3
+-rw-rw-r-- 1 ed ed 1214926 Apr  2 06:08 out_grd.ww3
+-rw-rw-r-- 1 ed ed  280800 Apr  2 06:08 restart.ww3
+-rw-rw-r-- 1 ed ed     443 Apr  2 06:08 time_count.txt
+-rw-rw-r-- 1 ed ed  384096 Apr  2 06:08 ww3.196806.nc
+-rw-rw-r-- 1 ed ed   22358 Apr  2 06:08 ww3.68060600.dir
+-rw-rw-r-- 1 ed ed   22358 Apr  2 06:08 ww3.68060600.fp
+-rw-rw-r-- 1 ed ed   22358 Apr  2 06:08 ww3.68060600.hs
+-rw-rw-r-- 1 ed ed   22358 Apr  2 06:08 ww3.68060601.dir
+-rw-rw-r-- 1 ed ed   22358 Apr  2 06:08 ww3.68060601.fp
+-rw-rw-r-- 1 ed ed   22358 Apr  2 06:08 ww3.68060601.hs
+-rw-rw-r-- 1 ed ed   22358 Apr  2 06:08 ww3.68060602.dir
+-rw-rw-r-- 1 ed ed   22358 Apr  2 06:08 ww3.68060602.fp
+-rw-rw-r-- 1 ed ed   22358 Apr  2 06:08 ww3.68060602.hs
+-rw-rw-r-- 1 ed ed   22358 Apr  2 06:08 ww3.68060603.dir
+-rw-rw-r-- 1 ed ed   22358 Apr  2 06:08 ww3.68060603.fp
+-rw-rw-r-- 1 ed ed   22358 Apr  2 06:08 ww3.68060603.hs
+-rw-rw-r-- 1 ed ed   22358 Apr  2 06:08 ww3.68060604.dir
+-rw-rw-r-- 1 ed ed   22358 Apr  2 06:08 ww3.68060604.fp
+-rw-rw-r-- 1 ed ed   22358 Apr  2 06:08 ww3.68060604.hs
+-rw-rw-r-- 1 ed ed   22358 Apr  2 06:08 ww3.68060605.dir
+-rw-rw-r-- 1 ed ed   22358 Apr  2 06:08 ww3.68060605.fp
+-rw-rw-r-- 1 ed ed   22358 Apr  2 06:08 ww3.68060605.hs
+-rw-rw-r-- 1 ed ed   13246 Apr  2 06:08 ww3_grid.out
+-rw-rw-r-- 1 ed ed    3040 Apr  2 06:08 ww3_ounf_flds_hrly.out
+-rw-rw-r-- 1 ed ed    6355 Apr  2 06:08 ww3_ounf.out
+-rw-rw-r-- 1 ed ed    1776 Apr  2 06:08 ww3_outf_flds_hrly.out
+-rw-rw-r-- 1 ed ed  247323 Apr  2 06:08 ww3_outf.out
+-rw-rw-r-- 1 ed ed    5551 Apr  2 06:08 ww3_shel.out
+-rw-rw-r-- 1 ed ed    3405 Apr  2 06:08 ww3_strt.out
+ 
+ 
+                    ==================================   
+                  ======>  END OF WAVEWATCH III  <====== 
+                    ==================================   
+ </pre>
 
 ## References
 

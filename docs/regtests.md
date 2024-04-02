@@ -627,6 +627,19 @@ These are the steps:
 * ww3_outf (print out wave heights).
 * ww3_outp (print out some spectra).
 
+## run_cmake_test
+
+There is a script called run_cmake_test. It seems relevant:
+
+<pre>
+ed@Pooh-Bah:~/ww3/regtests$ ./bin/run_cmake_test ~/ww3 ww3_tp1.1
+ 
+ Running now options: run_cmake_test /home/ed/ww3 ww3_tp1.1
+ 
+
+ERROR: /home/ed/ww3/tools not found
+</pre>
+
 ## References
 
 https://github.com/NOAA-EMC/WW3/wiki/Developer-Guide#regression-testing-in-wavewatch-iii

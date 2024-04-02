@@ -67,3 +67,7 @@ Download the test data by running the shell script: model/bin/ww3_from_ftp.sh.
 ## References
 
 https://github.com/NOAA-EMC/WW3/wiki/Developer-Guide#regression-testing-in-wavewatch-iii
+
+WaveWatch III Installation, retrieved from https://www.youtube.com/watch?v=cyyIKqm9R2s&t=1s on Apr 2, 2024.
+
+file:///home/ed/Downloads/10.WAVEWATCHIII_install.Tolman.pdf

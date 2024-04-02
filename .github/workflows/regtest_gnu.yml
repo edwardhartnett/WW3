@@ -1,4 +1,4 @@
-name: io_gnu
+name: regtest_gnu
 on: [push, pull_request, workflow_dispatch]
 
 # Cancel in-progress workflows when pushing to a branch
@@ -68,7 +68,7 @@ jobs:
           make VERBOSE=1
           cp -r ${GITHUB_WORKSPACE}/ww3/regtests/ww3_tp2.14/input/work_oasis3-mct ${GITHUB_WORKSPACE}
 
-  io_gnu:
+  regtest_gnu:
     needs: setup
     runs-on: ubuntu-latest
 
@@ -106,9 +106,9 @@ jobs:
           export LD_LIBRARY_PATH="/home/runner/work/WW3/WW3/spack/var/spack/environments/ww3-gnu/.spack-env/view/:$LD_LIBRARY_PATH"
           cmake -DSWITCH=${GITHUB_WORKSPACE}/ww3/regtests/unittests/data/switch.io -DCMAKE_BUILD_TYPE=Debug ..
           make -j2 VERBOSE=1
-          cd ../regtests/ww3_tp1.1
+#          cd ../regtests/ww3_tp1.1
           pwd
-          ls -l
+#          ls -l
           #${GITHUB_WORKSPACE}/ww3/build/bin/ww3_grid
         
       - name: upload-test-coverage

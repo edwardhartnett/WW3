@@ -1998,7 +1998,7 @@ CONTAINS
       !
       IF ( WRITE ) THEN
         WRITE (NDSOP)                                           &
-             eDSTR, VEROPT, NK, NTH, NOPTS
+             DSTR, VEROPT, NK, NTH, NOPTS
 #ifdef W3_ASCII
         WRITE (NDSOA,*)                                           &
              'IDSTR, VEROPT, NK, NTH, NOPTS:',                  &

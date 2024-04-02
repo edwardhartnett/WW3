@@ -51,9 +51,8 @@ program test_io_restart_bin
 !   call w3iors('HOT', ndsr, dumfpi)
 !   if (iotest .ne. 0) stop 10
 !   close(ndsop)
-
   
-  print *, 'OK!'
+!   print *, 'OK!'
   print *, 'SUCCESS!'
 end program test_io_restart_bin
 

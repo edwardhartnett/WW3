@@ -146,7 +146,7 @@ MODULE W3IOPOMD
   character(*), parameter, private :: VNAME_NK = 'NK'
 
   !> Variable name for the netCDF point output file, for MTH.
-  character(*), parameter, private :: VNAME_MTH = 'MTH'
+  character(*), parameter, private :: VNAME_NTH = 'NTH'
 
   !> Variable name for the netCDF point output file, for PTLOC.
   character(*), parameter, private :: VNAME_PTLOC = 'PTLOC'
@@ -1134,6 +1134,7 @@ CONTAINS
          IL, IW, II, PTLOC, PTIFAC, DPO, WAO, WDO,   &
          ASO, CAO, CDO, SPCO, PTNME, O2INIT, FNMPRE, &
          GRDID, ICEO, ICEHO, ICEFO
+    USE W3SERVMD, ONLY: EXTCDE
 #ifdef W3_FLX5
     USE W3ODATMD, ONLY: TAUAO, TAUDO, DAIRO
 #endif
@@ -1146,6 +1147,7 @@ CONTAINS
     INTEGER, INTENT(IN), OPTIONAL :: IMOD
     character(*), intent(in) :: filename
     integer, intent(inout) :: ncerr
+    INTEGER :: MK,MTH
     integer :: fh
     integer :: d_nopts, d_nspec, d_vsize, d_namelen, d_grdidlen
     integer :: d_nopts_len, d_nspec_len, d_vsize_len, d_namelen_len, d_grdidlen_len
@@ -1321,6 +1323,9 @@ CONTAINS
 903 FORMAT (/' *** WAVEWATCH III ERROR IN W3IOPON :'/               &
          '     ILEGAL VEROPT, READ : ',A/                       &
          '                   CHECK : ',A/)
+904 FORMAT (/' *** WAVEWATCH III ERROR IN W3IOPO :'/                &
+         '     ERROR IN SPECTRA, MK, MTH : ',2I8/               &
+         '              ARRAY DIMENSIONS : ',2I8/)
 
 
   END SUBROUTINE W3IOPON_READ
@@ -1998,7 +2003,7 @@ CONTAINS
       !
       IF ( WRITE ) THEN
         WRITE (NDSOP)                                           &
-             DSTR, VEROPT, NK, NTH, NOPTS
+            IDSTR, VEROPT, NK, NTH, NOPTS
 #ifdef W3_ASCII
         WRITE (NDSOA,*)                                           &
              'IDSTR, VEROPT, NK, NTH, NOPTS:',                  &

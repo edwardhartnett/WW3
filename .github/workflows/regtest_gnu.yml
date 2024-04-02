@@ -106,10 +106,6 @@ jobs:
           export LD_LIBRARY_PATH="/home/runner/work/WW3/WW3/spack/var/spack/environments/ww3-gnu/.spack-env/view/:$LD_LIBRARY_PATH"
           cmake -DSWITCH=${GITHUB_WORKSPACE}/ww3/regtests/unittests/data/switch.io -DCMAKE_BUILD_TYPE=Debug ..
           make -j2 VERBOSE=1
-#          cd ../regtests/ww3_tp1.1
-          pwd
-#          ls -l
-          #${GITHUB_WORKSPACE}/ww3/build/bin/ww3_grid
         
       - name: upload-test-coverage
         uses: actions/upload-artifact@v3

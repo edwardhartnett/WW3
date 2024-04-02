@@ -617,6 +617,16 @@ ed@Pooh-Bah:~/ww3/regtests/ww3_tp1.1/input$ ../../../build/bin/ww3_prep
      IOSTAT =    2
 </pre>
 
+## Running WW3
+
+These are the steps:
+* ww3_grid (generate mod_def.ww3 file).
+* ww3_strt (generate initial conditions).
+* ww3_prep (generate ice.ww3 file).
+* ww3_shel (run the model).
+* ww3_outf (print out wave heights).
+* ww3_outp (print out some spectra).
+
 ## References
 
 https://github.com/NOAA-EMC/WW3/wiki/Developer-Guide#regression-testing-in-wavewatch-iii

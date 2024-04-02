@@ -1371,12 +1371,14 @@ CONTAINS
 !!JDM - defined in module above    CHARACTER(LEN=31), PARAMETER :: IDSTR = 'WAVEWATCH III POINT OUTPUT FILE'
 !!JDM - defined in module above    CHARACTER(LEN=10), PARAMETER :: VEROPT = '2021-04-06'
 
+    write(*,*) 'JDM in write', IPASS, timestep_only
     !If first pass, or if you are writting a file for every time-step: 
     IF ( IPASS.EQ.1  .OR. timestep_only.EQ.1 ) THEN 
       ! Create the netCDF file.
       ncerr = nf90_create(filename, NF90_NETCDF4, fh)
       if (ncerr .ne. 0) return
-
+ 
+      write(*,*)'JDM a'
       ! Define dimensions.
       ncerr = nf90_def_dim(fh, DNAME_NOPTS, NOPTS, d_nopts)
       if (ncerr .ne. 0) return
@@ -1391,26 +1393,26 @@ CONTAINS
       ncerr = nf90_def_dim(fh, DNAME_TIME, NF90_UNLIMITED, d_time)
       if (ncerr .ne. 0) return
 
+      write(*,*) 'JDM b'
       ! Define global attributes.
       ncerr = nf90_put_att(fh, NF90_GLOBAL, 'title', IDSTR)
       if (ncerr .ne. 0) return
       ncerr = nf90_put_att(fh, NF90_GLOBAL, 'version', VEROPT)
       if (ncerr .ne. 0) return
 
+      write(*,*) 'JDM c'
       ! Define scalar variables.
       ncerr = nf90_def_var(fh, VNAME_NK, NF90_INT, v_nk)
       if (ncerr .ne. 0) return
       ncerr = nf90_def_var(fh, VNAME_NTH, NF90_INT, v_nth)
       if (ncerr .ne. 0) return
 
+      write(*,*) 'JDM d'
       ! Define vars with nopts as a dimension.
       ncerr = nf90_def_var(fh, VNAME_PTLOC, NF90_INT, (/d_vsize, d_nopts/), v_ptloc)
       if (ncerr .ne. 0) return
       ncerr = nf90_def_var(fh, VNAME_PTNME, NF90_CHAR, (/d_namelen, d_nopts/), v_ptnme)
       if (ncerr .ne. 0) return
-
-
-!ed's code:
       ncerr = nf90_def_var(fh, VNAME_IW, NF90_INT, (/d_nopts, d_time/), v_iw)
       if (ncerr .ne. 0) return
       ncerr = nf90_def_var(fh, VNAME_II, NF90_INT, (/d_nopts, d_time/), v_ii)
@@ -1452,58 +1454,95 @@ CONTAINS
       if (ncerr .ne. 0) return
       ncerr = nf90_def_var(fh, VNAME_SPCO, NF90_INT, (/d_nspec, d_nopts, d_time/), v_spco)
       if (ncerr .ne. 0) return
-
+      write(*,*) 'JDM c'
       ! Write the scalar data.
       ncerr = nf90_put_var(fh, v_nk, NK)
       if (ncerr .ne. 0) return
       ncerr = nf90_put_var(fh, v_nth, NTH)
       if (ncerr .ne. 0) return
 
+      write(*,*) 'JDM e' 
       ! Write the data with NOPTS as a dimension.
       ncerr = nf90_put_var(fh, v_ptloc, PTLOC)
       if (ncerr .ne. 0) return
       ncerr = nf90_put_var(fh, v_ptnme, PTNME)
       if (ncerr .ne. 0) return
 
+    ELSE 
+      write(*,*) 'JDM else'
+      ncerr = nf90_open(filename, nf90_write, fh)
+      if (ncerr .ne. 0) return
     END IF 
 
+    write(*,*) 'JDM f 1'
     ncerr = nf90_put_var(fh, v_iw, IW)
     if (ncerr .ne. 0) return
+    write(*,*) 'JDM f 2'
+
     ncerr = nf90_put_var(fh, v_ii, II)
     if (ncerr .ne. 0) return
+    write(*,*) 'JDM f 3'
+
     ncerr = nf90_put_var(fh, v_il, IL)
     if (ncerr .ne. 0) return
+    write(*,*) 'JDM f 4'
+
     ncerr = nf90_put_var(fh, v_dpo, DPO)
     if (ncerr .ne. 0) return
+    write(*,*) 'JDM f 5'
+
     ncerr = nf90_put_var(fh, v_wao, WAO)
     if (ncerr .ne. 0) return
 #ifdef W3_FLX5
+    write(*,*) 'JDM f 6'
+
     ncerr = nf90_put_var(fh, v_tauao, TAUAO)
     if (ncerr .ne. 0) return
+    write(*,*) 'JDM f 7'
+
     ncerr = nf90_put_var(fh, v_taido, TAIDO)
     if (ncerr .ne. 0) return
+    write(*,*) 'JDM f 8'
+
     ncerr = nf90_put_var(fh, v_dairo, DAIRO)
     if (ncerr .ne. 0) return
 #endif
 #ifdef W3_SETUP
+    write(*,*) 'JDM f 9'
+
     ncerr = nf90_put_var(fh, v_zet_seto, ZET_SETO)
     if (ncerr .ne. 0) return
 #endif
+    write(*,*) 'JDM f 10'
+
     ncerr = nf90_put_var(fh, v_aso, ASO)
     if (ncerr .ne. 0) return
+    write(*,*) 'JDM f 11'
+
     ncerr = nf90_put_var(fh, v_cao, CAO)
     if (ncerr .ne. 0) return
+    write(*,*) 'JDM f 12'
+
     ncerr = nf90_put_var(fh, v_iceo, ICEO)
     if (ncerr .ne. 0) return
+    write(*,*) 'JDM f 13'
+
     ncerr = nf90_put_var(fh, v_iceho, ICEHO)
     if (ncerr .ne. 0) return
+    write(*,*) 'JDM f 14'
+
     ncerr = nf90_put_var(fh, v_icefo, ICEFO)
     if (ncerr .ne. 0) return
+    write(*,*) 'JDM f 15'
+
     ncerr = nf90_put_var(fh, v_grdid, GRDID)
     if (ncerr .ne. 0) return
+    write(*,*) 'JDM f 16'
+
     ncerr = nf90_put_var(fh, v_spco, SPCO)
     if (ncerr .ne. 0) return
 
+    write(*,*) 'JDM g'
     ! Close the file.
     ncerr = nf90_close(fh)
     if (ncerr .ne. 0) return

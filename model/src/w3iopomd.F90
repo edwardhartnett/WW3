@@ -146,7 +146,7 @@ MODULE W3IOPOMD
   character(*), parameter, private :: VNAME_NK = 'NK'
 
   !> Variable name for the netCDF point output file, for MTH.
-  character(*), parameter, private :: VNAME_MTH = 'MTH'
+  character(*), parameter, private :: VNAME_NTH = 'NTH'
 
   !> Variable name for the netCDF point output file, for PTLOC.
   character(*), parameter, private :: VNAME_PTLOC = 'PTLOC'

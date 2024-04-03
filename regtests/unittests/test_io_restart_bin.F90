@@ -52,7 +52,6 @@ program test_io_restart_bin
 !   if (iotest .ne. 0) stop 10
 !   close(ndsop)
 
-  
   print *, 'OK!'
   print *, 'SUCCESS!'
 end program test_io_restart_bin

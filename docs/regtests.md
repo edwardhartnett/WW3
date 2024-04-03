@@ -633,7 +633,7 @@ There is a script called run_cmake_test. It seems relevant:
 
 <pre>
 
-ed@Pooh-Bah:~/ww3/regtests$ ./bin/run_cmake_test -o all -S -T -s PR1_MPI -w work_PR1_MPI              -f -p mpirun -n 24 ../model ww3_tp2.1
+ed@Pooh-Bah:~/ww3/regtests$ ./bin/run_cmake_test -o all -S -T -s PR1_MPI -w work_PR1_MPI              -f -p mpirun -n 24 ../model ww3_tp1.1
  
  Running now options: run_cmake_test -o all -S -T -s PR1_MPI -w work_PR1_MPI -f -p mpirun -n 24 ../model ww3_tp2.1
  

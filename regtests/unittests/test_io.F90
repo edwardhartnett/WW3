@@ -67,7 +67,7 @@ program test_io
   close(ndsop)
 
   ! Make sure we got the values we expected.
-  if (nopts .ne. 11) stop 11
+ if (nopts .ne. 11) stop 11
   expected_loc_1 = 0.0
   do i = 1, nopts
      ! Check ptnme and ptloc arrays.
@@ -87,6 +87,7 @@ program test_io
 
   print *, 'OK!'
   print *, 'initializing some data...'
+  ipass2 = 0
   do i = 1, nopts
      do j = 1, nspec
         spco(j, i) = 0.0
@@ -106,6 +107,7 @@ program test_io
   ! print *, iotest
   ! if (iotest .ne. 0) stop 100
   ! print *, 'OK!'
+
   
   print *, 'OK!'
   

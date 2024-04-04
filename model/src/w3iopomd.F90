@@ -65,7 +65,7 @@ MODULE W3IOPOMD
   !      Name      Type  Scope    Description
   !     ----------------------------------------------------------------
   !      VEROPT    C*10  Private  Point output file version number.
-  !      IDSTR     C*32  Private  Point output file ID string.
+  !      IDSTR     C*31  Private  Point output file ID string.
   !     ----------------------------------------------------------------
   !
   !  3. Subroutines and functions :
@@ -1131,6 +1131,7 @@ CONTAINS
          IL, IW, II, PTLOC, PTIFAC, DPO, WAO, WDO,   &
          ASO, CAO, CDO, SPCO, PTNME, O2INIT, FNMPRE, &
          GRDID, ICEO, ICEHO, ICEFO
+    USE W3SERVMD, ONLY: EXTCDE
 #ifdef W3_FLX5
     USE W3ODATMD, ONLY: TAUAO, TAUDO, DAIRO
 #endif
@@ -1143,6 +1144,7 @@ CONTAINS
     INTEGER, INTENT(IN), OPTIONAL :: IMOD
     character(*), intent(in) :: filename
     integer, intent(inout) :: ncerr
+    INTEGER :: MK,MTH
     integer :: fh
     integer :: d_nopts, d_nspec, d_vsize, d_namelen, d_grdidlen    
     integer :: d_nopts_len, d_nspec_len, d_vsize_len, d_namelen_len, d_grdidlen_len    

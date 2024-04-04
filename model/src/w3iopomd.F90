@@ -122,19 +122,19 @@ MODULE W3IOPOMD
   !> Dimension name for the netCDF point output file, for NOPTS, the
   !> Number of Output Points.
   character(*), parameter, private :: DNAME_NOPTS = 'NOPTS'
-  
+
   !> Dimension name for the netCDF point output file, for NSPEC.
   character(*), parameter, private :: DNAME_NSPEC = 'NSPEC'
-  
+
   !> Dimension name for the netCDF point output file, for VSIZE. This
   !> is for the vector size for points, which is 2.
   character(*), parameter, private :: DNAME_VSIZE = 'VSIZE'
-  
+
   !> Dimension name for the netCDF point output file, for
   !> NAMELEN. This is the length of the PTNME strings, which contains
   !> the names of the points.
   character(*), parameter, private :: DNAME_NAMELEN = 'NAMELEN'
-  
+
   !> Dimension name for the netCDF point output file, for GRDIDLEN,
   !> this is the length of the GRDID character array.
   character(*), parameter, private :: DNAME_GRDIDLEN = 'GRDIDLEN'
@@ -146,13 +146,16 @@ MODULE W3IOPOMD
   character(*), parameter, private :: VNAME_NK = 'NK'
 
   !> Variable name for the netCDF point output file, for MTH.
-  character(*), parameter, private :: VNAME_MTH = 'MTH'
+  character(*), parameter, private :: VNAME_NTH = 'NTH'
 
   !> Variable name for the netCDF point output file, for PTLOC.
   character(*), parameter, private :: VNAME_PTLOC = 'PTLOC'
 
   !> Variable name for the netCDF point output file, for PTNME.
   character(*), parameter, private :: VNAME_PTNME = 'PTNME'
+
+  !> Variable name for the netCDF point output file, for TIME. 
+  character(*), parameter, private :: VNAME_TIME = 'TIME'
 
   !> Variable name for the netCDF point output file, for IW.
   character(*), parameter, private :: VNAME_IW = 'IW'
@@ -207,7 +210,7 @@ MODULE W3IOPOMD
 
   !> Variable name for the netCDF point output file, for SPCO.
   character(*), parameter, private :: VNAME_SPCO = 'SPCO'
-  
+
   !/
 CONTAINS
   !/ ------------------------------------------------------------------- /
@@ -1125,7 +1128,7 @@ CONTAINS
   !> @author Edward Hartnett  @date 1-Nov-2023
   !>
   SUBROUTINE W3IOPON_READ(IOTST, IMOD, filename, ncerr)
-    use netcdf
+    USE NetCDF
     USE W3GDATMD, ONLY: NTH, NK, NSPEC, FILEXT
     USE W3ODATMD, ONLY: NDST, NDSE, IPASS => IPASS2, NOPTS, IPTINT, &
          IL, IW, II, PTLOC, PTIFAC, DPO, WAO, WDO,   &
@@ -1146,69 +1149,93 @@ CONTAINS
     integer, intent(inout) :: ncerr
     INTEGER :: MK,MTH
     integer :: fh
-    integer :: d_nopts, d_nspec, d_vsize, d_namelen, d_grdidlen    
-    integer :: d_nopts_len, d_nspec_len, d_vsize_len, d_namelen_len, d_grdidlen_len    
-    integer :: v_idtst, v_vertst, v_nk, v_mth, v_ptloc, v_ptnme
+    integer :: d_nopts, d_nspec, d_vsize, d_namelen, d_grdidlen
+    integer :: d_nopts_len, d_nspec_len, d_vsize_len, d_namelen_len, d_grdidlen_len
+    integer :: v_idtst, v_vertst, v_nk, v_nth, v_ptloc, v_ptnme
     integer :: v_iw, v_ii, v_il, v_dpo, v_wao, v_wdo, v_tauao
     integer :: v_taido, v_dairo, v_zet_seto, v_aso, v_cao, v_cdo, v_iceo
     integer :: v_iceho, v_icefo, v_grdid, v_spco
 
-    print *,filename
     IOTST = 0
-    
-    ! Open the netCDF file.
-    ncerr = nf90_open(filename, NF90_NOWRITE, fh)
-    if (ncerr .ne. 0) return
+    IF ( IPASS.EQ.1 ) THEN 
+      ! Open the netCDF file.
+      ncerr = nf90_open(filename, NF90_NOWRITE, fh)
+      if (ncerr .ne. 0) return
 
-    ! Read the dimension information for NOPTS.
-    ncerr = nf90_inq_dimid(fh, DNAME_NOPTS, d_nopts)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_inquire_dimension(fh, d_nopts, len = d_nopts_len)
-    if (ncerr .ne. 0) return
+      ! Read and check the version: 
+      ! TO DO add reading of IDTST and VERTST and make checks: 
+      !  IF ( IDTST .NE. IDSTR ) THEN
+      !    WRITE (NDSE,902) IDTST, IDSTR
+      !    CALL EXTCDE ( 10 )
+      !  END IF
+      !  IF ( VERTST .NE. VEROPT ) THEN
+      !    WRITE (NDSE,903) VERTST, VEROPT
+      !    CALL EXTCDE ( 11 )
+      !  END IF
 
-    ! Read the dimension information for NSPEC.
-    ncerr = nf90_inq_dimid(fh, DNAME_NSPEC, d_nspec)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_inquire_dimension(fh, d_nspec, len = d_nspec_len)
-    if (ncerr .ne. 0) return
 
-    ! Read the dimension information for VSIZE.
-    ncerr = nf90_inq_dimid(fh, DNAME_VSIZE, d_vsize)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_inquire_dimension(fh, d_vsize, len = d_vsize_len)
-    if (ncerr .ne. 0) return
+      ! Read the dimension information for NOPTS.
+      ncerr = nf90_inq_dimid(fh, DNAME_NOPTS, d_nopts)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_inquire_dimension(fh, d_nopts, len = d_nopts_len)
+      if (ncerr .ne. 0) return
 
-    ! Read the dimension information for NAMELEN.
-    ncerr = nf90_inq_dimid(fh, DNAME_NAMELEN, d_namelen)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_inquire_dimension(fh, d_namelen, len = d_namelen_len)
-    if (ncerr .ne. 0) return
+      ! Read the dimension information for NSPEC.
+      ncerr = nf90_inq_dimid(fh, DNAME_NSPEC, d_nspec)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_inquire_dimension(fh, d_nspec, len = d_nspec_len)
+      if (ncerr .ne. 0) return
 
-    ! Read the dimension information for GRDIDLEN.
-    ncerr = nf90_inq_dimid(fh, DNAME_GRDIDLEN, d_grdidlen)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_inquire_dimension(fh, d_grdidlen, len = d_grdidlen_len)
-    if (ncerr .ne. 0) return
+      ! Read the dimension information for VSIZE.
+      ncerr = nf90_inq_dimid(fh, DNAME_VSIZE, d_vsize)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_inquire_dimension(fh, d_vsize, len = d_vsize_len)
+      if (ncerr .ne. 0) return
 
-    ! Read scalar variables.
-    ncerr = nf90_inq_varid(fh, VNAME_NK, v_nk)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_get_var(fh, v_nk, NK)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_inq_varid(fh, VNAME_MTH, v_mth)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_get_var(fh, v_mth, NTH)
-    if (ncerr .ne. 0) return
+      ! Read the dimension information for NAMELEN.
+      ncerr = nf90_inq_dimid(fh, DNAME_NAMELEN, d_namelen)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_inquire_dimension(fh, d_namelen, len = d_namelen_len)
+      if (ncerr .ne. 0) return
 
-    ! Read vars with nopts as a dimension.
-    ncerr = nf90_inq_varid(fh, VNAME_PTLOC, v_ptloc)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_get_var(fh, v_ptloc, PTLOC)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_inq_varid(fh, VNAME_PTNME, v_ptnme)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_get_var(fh, v_ptnme, PTNME)
-    if (ncerr .ne. 0) return
+      ! Read the dimension information for GRDIDLEN.
+      ncerr = nf90_inq_dimid(fh, DNAME_GRDIDLEN, d_grdidlen)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_inquire_dimension(fh, d_grdidlen, len = d_grdidlen_len)
+      if (ncerr .ne. 0) return
+
+      ! Read scalar variables.
+      ncerr = nf90_inq_varid(fh, VNAME_NK, v_nk)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_get_var(fh, v_nk, MK)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_inq_varid(fh, VNAME_NTH, v_nth)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_get_var(fh, v_nth, MTH)
+      if (ncerr .ne. 0) return
+
+      !read in written variables NK, NTH as MK and MTH
+      !and ensure they match 
+      IF (NK.NE.MK .OR. NTH.NE.MTH) THEN
+        WRITE (NDSE,904) MK, MTH, NK, NTH
+        CALL EXTCDE ( 12 )
+      END IF
+
+      ! Read vars with nopts as a dimension.
+      ncerr = nf90_inq_varid(fh, VNAME_PTLOC, v_ptloc)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_get_var(fh, v_ptloc, PTLOC)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_inq_varid(fh, VNAME_PTNME, v_ptnme)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_get_var(fh, v_ptnme, PTNME)
+      if (ncerr .ne. 0) return
+    END IF
+
+    !missing variable TIME??? 
+
+    ! All of the below variables are missing the "time" dimension... 
+    ! the time dimension being read should be for "IPASS" 
     ncerr = nf90_inq_varid(fh, VNAME_IW, v_iw)
     if (ncerr .ne. 0) return
     ncerr = nf90_get_var(fh, v_iw, IW)
@@ -1246,13 +1273,13 @@ CONTAINS
     if (ncerr .ne. 0) return
     ncerr = nf90_get_var(fh, v_dairo, DAIRO)
     if (ncerr .ne. 0) return
-#endif    
+#endif
 #ifdef W3_SETUP
     ncerr = nf90_inq_varid(fh, ZET_SETO, v_zet_seto)
     if (ncerr .ne. 0) return
     ncerr = nf90_get_var(fh, v_zet_seto, ZET_SETO)
     if (ncerr .ne. 0) return
-#endif    
+#endif
     ncerr = nf90_inq_varid(fh, VNAME_ASO, v_aso)
     if (ncerr .ne. 0) return
     ncerr = nf90_get_var(fh, v_aso, ASO)
@@ -1285,11 +1312,22 @@ CONTAINS
     if (ncerr .ne. 0) return
     ncerr = nf90_get_var(fh, v_spco, SPCO)
     if (ncerr .ne. 0) return
-    
+
     ! Close the file.
     ncerr = nf90_close(fh)
     if (ncerr .ne. 0) return
-    
+
+902 FORMAT (/' *** WAVEWATCH III ERROR IN W3IOPON :'/               &
+         '     ILEGAL IDSTR, READ : ',A/                        &
+         '                  CHECK : ',A/)
+903 FORMAT (/' *** WAVEWATCH III ERROR IN W3IOPON :'/               &
+         '     ILEGAL VEROPT, READ : ',A/                       &
+         '                   CHECK : ',A/)
+904 FORMAT (/' *** WAVEWATCH III ERROR IN W3IOPO :'/                &
+         '     ERROR IN SPECTRA, MK, MTH : ',2I8/               &
+         '              ARRAY DIMENSIONS : ',2I8/)
+
+
   END SUBROUTINE W3IOPON_READ
 
   !/ ------------------------------------------------------------------- /
@@ -1308,6 +1346,7 @@ CONTAINS
   SUBROUTINE W3IOPON_WRITE(timestep_only, IMOD, filename, ncerr)
     use netcdf
     USE W3GDATMD, ONLY: NTH, NK, NSPEC, FILEXT
+    USE W3WDATMD, ONLY: TIME
     USE W3ODATMD, ONLY: NDST, NDSE, IPASS => IPASS2, NOPTS, IPTINT, &
          IL, IW, II, PTLOC, PTIFAC, DPO, WAO, WDO,   &
          ASO, CAO, CDO, SPCO, PTNME, O2INIT, FNMPRE, &
@@ -1318,148 +1357,313 @@ CONTAINS
 #ifdef W3_SETUP
     USE W3ODATMD, ONLY: ZET_SETO
 #endif
-    
+
     IMPLICIT NONE
     integer, intent(in) :: timestep_only ! 1 if only timestep should be written.
     INTEGER, INTENT(IN) :: IMOD
     character(*), intent(in) :: filename
     integer, intent(inout) :: ncerr
-    integer :: fh, ndim, nvar, fmt
+    integer :: fh, ndim, nvar, fmt, itime 
     integer :: d_nopts, d_nspec, d_vsize, d_namelen, d_grdidlen, d_time
-    integer :: v_idtst, v_vertst, v_nk, v_mth, v_ptloc, v_ptnme
+    integer :: v_idtst, v_vertst, v_nk, v_nth, v_ptloc, v_ptnme, v_time
     integer :: v_iw, v_ii, v_il, v_dpo, v_wao, v_wdo, v_tauao
     integer :: v_taido, v_dairo, v_zet_seto, v_aso, v_cao, v_cdo, v_iceo
     integer :: v_iceho, v_icefo, v_grdid, v_spco
-    character (len = *), parameter :: FILE_NAME = "f90tst_nc4.nc"
-    CHARACTER(LEN=31), PARAMETER :: IDSTR = 'WAVEWATCH III POINT OUTPUT FILE'
-    CHARACTER(LEN=10), PARAMETER :: VEROPT = '2021-04-06'
+!!JDM - defined in module above    CHARACTER(LEN=31), PARAMETER :: IDSTR = 'WAVEWATCH III POINT OUTPUT FILE'
+!!JDM - defined in module above    CHARACTER(LEN=10), PARAMETER :: VEROPT = '2021-04-06'
 
-    print *, 'WRITE ',filename, len(filename)
+    write(*,*) 'JDM in write', IPASS, timestep_only
+    !If first pass, or if you are writting a file for every time-step: 
+    IF ( IPASS.EQ.1  .OR. timestep_only.EQ.1 ) THEN 
+      ! Create the netCDF file.
+      ncerr = nf90_create(filename, NF90_NETCDF4, fh)
+      if (ncerr .ne. 0) return
+ 
+      write(*,*)'JDM a'
+      ! Define dimensions.
+      ncerr = nf90_def_dim(fh, DNAME_NOPTS, NOPTS, d_nopts)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_dim(fh, DNAME_NSPEC, NSPEC, d_nspec)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_dim(fh, DNAME_VSIZE, 2, d_vsize)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_dim(fh, DNAME_NAMELEN, 40, d_namelen)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_dim(fh, DNAME_GRDIDLEN, 13, d_grdidlen)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_dim(fh, DNAME_TIME, NF90_UNLIMITED, d_time)
+      if (ncerr .ne. 0) return
 
-    ! Create the netCDF file.
-    ncerr = nf90_create(filename, NF90_NETCDF4, fh)
-    if (ncerr .ne. 0) return
+      write(*,*) 'JDM b'
+      ! Define global attributes.
+      ncerr = nf90_put_att(fh, NF90_GLOBAL, 'title', IDSTR)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_put_att(fh, NF90_GLOBAL, 'version', VEROPT)
+      if (ncerr .ne. 0) return
 
-    ! Define dimensions.
-    ncerr = nf90_def_dim(fh, DNAME_NOPTS, NOPTS, d_nopts)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_def_dim(fh, DNAME_NSPEC, NSPEC, d_nspec)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_def_dim(fh, DNAME_VSIZE, 2, d_vsize)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_def_dim(fh, DNAME_NAMELEN, 40, d_namelen)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_def_dim(fh, DNAME_GRDIDLEN, 13, d_grdidlen)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_def_dim(fh, DNAME_TIME, NF90_UNLIMITED, d_time)
-    if (ncerr .ne. 0) return
+      write(*,*) 'JDM c'
+      ! Define scalar variables.
+      ncerr = nf90_def_var(fh, VNAME_NK, NF90_INT, v_nk)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_var(fh, VNAME_NTH, NF90_INT, v_nth)
+      if (ncerr .ne. 0) return
 
-    ! Define global attributes.
-    ncerr = nf90_put_att(fh, NF90_GLOBAL, 'title', IDSTR)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_put_att(fh, NF90_GLOBAL, 'version', VEROPT)
-    if (ncerr .ne. 0) return
+      write(*,*) 'JDM d'
+      ! Define vars with nopts as a dimension.
+      ncerr = nf90_def_var(fh, VNAME_PTLOC, NF90_FLOAT, (/d_vsize, d_nopts/), v_ptloc)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_var(fh, VNAME_PTNME, NF90_CHAR, (/d_namelen, d_nopts/), v_ptnme)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_var(fh, VNAME_TIME, NF90_INT, (/d_vsize, d_time/),v_time)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_var(fh, VNAME_IW, NF90_INT, (/d_nopts, d_time/), v_iw)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_var(fh, VNAME_II, NF90_INT, (/d_nopts, d_time/), v_ii)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_var(fh, VNAME_IL, NF90_INT, (/d_nopts, d_time/), v_il)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_var(fh, VNAME_DPO, NF90_FLOAT, (/d_nopts, d_time/), v_dpo)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_var(fh, VNAME_WAO, NF90_FLOAT, (/d_nopts, d_time/), v_wao)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_var(fh, VNAME_WDO, NF90_FLOAT, (/d_nopts, d_time/), v_wdo)
+      if (ncerr .ne. 0) return
+
+#ifdef W3_FLX5
+      ncerr = nf90_def_var(fh, VNAME_TAUAO, NF90_FLOAT, (/d_nopts, d_time/), v_tauao)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_var(fh, VNAME_TAIDO, NF90_FLOAT, (/d_nopts, d_time/), v_taido)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_var(fh, VNAME_DAIRO, NF90_FLOAT, (/d_nopts, d_time/), v_dairo)
+      if (ncerr .ne. 0) return
+#endif    
+#ifdef W3_SETUP
+      ncerr = nf90_def_var(fh, VNAME_ZET_SETO, NF90_FLOAT, (/d_nopts, d_time/), v_zet_seto)
+      if (ncerr .ne. 0) return
+#endif    
+      ncerr = nf90_def_var(fh, VNAME_ASO, NF90_FLOAT, (/d_nopts, d_time/), v_aso)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_var(fh, VNAME_CAO, NF90_FLOAT, (/d_nopts, d_time/), v_cao)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_var(fh, VNAME_CDO, NF90_FLOAT, (/d_nopts, d_time/), v_cdo)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_var(fh, VNAME_ICEO, NF90_FLOAT, (/d_nopts, d_time/), v_iceo)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_var(fh, VNAME_ICEHO, NF90_FLOAT, (/d_nopts, d_time/), v_iceho)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_var(fh, VNAME_ICEFO, NF90_FLOAT, (/d_nopts, d_time/), v_icefo)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_var(fh, VNAME_GRDID, NF90_CHAR, (/d_grdidlen, d_nopts, d_time/), v_grdid)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_def_var(fh, VNAME_SPCO, NF90_FLOAT, (/d_nspec, d_nopts, d_time/), v_spco)
+      if (ncerr .ne. 0) return
+  
+      write(*,*) 'JDM bb'
+      ncerr = nf90_enddef(fh)
+      if (ncerr .ne. 0) return
+
+      write(*,*) 'JDM c'
+      ! Write the scalar data.
+      ncerr = nf90_put_var(fh, v_nk, NK)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_put_var(fh, v_nth, NTH)
+      if (ncerr .ne. 0) return
+
+      write(*,*) 'JDM e' 
+      ! Write the data with NOPTS as a dimension.
+      ncerr = nf90_put_var(fh, v_ptloc, PTLOC)
+      if (ncerr .ne. 0) return
+      ncerr = nf90_put_var(fh, v_ptnme, PTNME)
+      if (ncerr .ne. 0) return
+      
+    ELSE 
+      write(*,*) 'JDM else'
+      ncerr = nf90_open(filename, nf90_write, fh)
+      if (ncerr .ne. 0) return
+    END IF 
+
+     IF ( timestep_only.EQ.1 ) THEN
+        itime=1
+     ELSE 
+        itime=IPASS
+     END IF
+
     
-    ! Define scalar variables.
-    ncerr = nf90_def_var(fh, VNAME_NK, NF90_INT, v_nk)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_MTH, NF90_INT, v_mth)
+
+    ! TO DO ADD TIME VARIABLE 
+    write(*,*) 'JDM f 0', TIME
+    IF ( itime > 1 ) THEN
+       ncerr = nf90_inq_varid(fh, VNAME_TIME, v_time)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_time, TIME, start = (/ 1, itime/), &
+       count = (/ 2, 1 /))
     if (ncerr .ne. 0) return
 
-    ! Define vars with nopts as a dimension.
-    ncerr = nf90_def_var(fh, VNAME_PTLOC, NF90_INT, (/d_vsize, d_nopts/), v_ptloc)
+
+    ! set IW, II and IL to 0 because it is not used and gives &
+    ! outlier values in out_pnt.points - TODO: REMOVE???
+    IW = 0
+    II = 0
+    IL = 0
+
+    write(*,*) 'JDM f 1'
+    IF ( itime > 1 ) THEN 
+       ncerr = nf90_inq_varid(fh, VNAME_IW, v_iw)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_iw, IW, start = (/ 1, itime/), &
+       count = (/ NOPTS, 1 /))
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_PTNME, NF90_CHAR, (/d_namelen, d_nopts/), v_ptnme)
+    write(*,*) 'IW:', IW 
+    write(*,*) 'JDM f 2'
+    IF ( itime > 1 ) THEN
+       ncerr = nf90_inq_varid(fh, VNAME_II, v_ii)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_ii, II, start = (/ 1, itime/), &
+       count = (/ nopts, 1 /))
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_IW, NF90_INT, (/d_nopts, d_time/), v_iw)
+    write(*,*) 'JDM f 3'
+    IF ( itime > 1 ) THEN
+       ncerr = nf90_inq_varid(fh, VNAME_IL, v_il)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_il, IL, start = (/ 1, itime/), &
+       count = (/ nopts, 1 /))
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_II, NF90_INT, (/d_nopts, d_time/), v_ii)
+    write(*,*) 'JDM f 4'
+    IF ( itime > 1 ) THEN
+       ncerr = nf90_inq_varid(fh, VNAME_DPO, v_dpo)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_dpo, DPO, start = (/ 1, itime/), &
+       count = (/ nopts, 1 /))
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_IL, NF90_INT, (/d_nopts, d_time/), v_il)
+    write(*,*) 'JDM f 5'
+    IF ( itime > 1 ) THEN
+       ncerr = nf90_inq_varid(fh, VNAME_WAO, v_wao)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_wao, WAO, start = (/ 1, itime/), &
+       count = (/ nopts, 1 /))
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_DPO, NF90_INT, (/d_nopts, d_time/), v_dpo)
+
+    write(*,*) 'JDM f 5b'
+    IF ( itime > 1 ) THEN
+       ncerr = nf90_inq_varid(fh, VNAME_WDO, v_wdo)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_wdo, WDO, start = (/ 1, itime/), &
+       count = (/ nopts, 1 /))
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_WAO, NF90_INT, (/d_nopts, d_time/), v_wao)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_WDO, NF90_INT, (/d_nopts, d_time/), v_wdo)
-    if (ncerr .ne. 0) return
+
+
 #ifdef W3_FLX5
-    ncerr = nf90_def_var(fh, VNAME_TAUAO, NF90_INT, (/d_nopts, d_time/), v_tauao)
+    write(*,*) 'JDM f 6'
+    IF ( itime > 1 ) THEN
+       ncerr = nf90_inq_varid(fh, VNAME_TAUAO, v_tauao)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_tauao, TAUAO, start = (/ 1, itime/), &
+       count = (/ nopts, 1 /))
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_TAIDO, NF90_INT, (/d_nopts, d_time/), v_taido)
+    write(*,*) 'JDM f 7'
+    IF ( itime > 1 ) THEN
+       ncerr = nf90_inq_varid(fh, VNAME_TAIDO, v_taido)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_taido, TAIDO, start = (/ 1, itime/), &
+       count = (/ nopts, 1 /))
     if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_DAIRO, NF90_INT, (/d_nopts, d_time/), v_dairo)
-    if (ncerr .ne. 0) return
-#endif    
-#ifdef W3_SETUP
-    ncerr = nf90_def_var(fh, VNAME_ZET_SETO, NF90_INT, (/d_nopts, d_time/), v_zet_seto)
-    if (ncerr .ne. 0) return
-#endif    
-    ncerr = nf90_def_var(fh, VNAME_ASO, NF90_INT, (/d_nopts, d_time/), v_aso)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_CAO, NF90_INT, (/d_nopts, d_time/), v_cao)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_CDO, NF90_INT, (/d_nopts, d_time/), v_cdo)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_ICEO, NF90_INT, (/d_nopts, d_time/), v_iceo)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_ICEHO, NF90_INT, (/d_nopts, d_time/), v_iceho)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_ICEFO, NF90_INT, (/d_nopts, d_time/), v_icefo)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_GRDID, NF90_CHAR, (/d_grdidlen, d_nopts, d_time/), v_grdid)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_def_var(fh, VNAME_SPCO, NF90_INT, (/d_nspec, d_nopts, d_time/), v_spco)
-    if (ncerr .ne. 0) return
-
-    ! Write the scalar data.
-    ncerr = nf90_put_var(fh, v_nk, NK)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_put_var(fh, v_mth, NTH)
-    if (ncerr .ne. 0) return
-
-    ! Write the data with NOPTS as a dimension.
-    ncerr = nf90_put_var(fh, v_ptloc, PTLOC)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_put_var(fh, v_ptnme, PTNME)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_put_var(fh, v_iw, IW)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_put_var(fh, v_ii, II)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_put_var(fh, v_il, IL)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_put_var(fh, v_dpo, DPO)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_put_var(fh, v_wao, WAO)
-    if (ncerr .ne. 0) return
-#ifdef W3_FLX5
-    ncerr = nf90_put_var(fh, v_tauao, TAUAO)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_put_var(fh, v_taido, TAIDO)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_put_var(fh, v_dairo, DAIRO)
+    write(*,*) 'JDM f 8'
+    IF ( itime > 1 ) THEN
+       ncerr = nf90_inq_varid(fh, VNAME_DAIRO, v_dairo)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_dairo, DAIRO, start = (/ 1, itime/), &
+       count = (/ nopts, 1 /))
     if (ncerr .ne. 0) return
 #endif
 #ifdef W3_SETUP
-    ncerr = nf90_put_var(fh, v_zet_seto, ZET_SETO)
+    write(*,*) 'JDM f 9'
+    IF ( itime > 1 ) THEN
+       ncerr = nf90_inq_varid(fh, VNAME_ZET_SETO, v_zet_seto)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_zet_seto, ZET_SETO, start = (/ 1, itime/), &
+       count = (/ nopts, 1 /))
     if (ncerr .ne. 0) return
 #endif
-    ncerr = nf90_put_var(fh, v_aso, ASO)
+    write(*,*) 'JDM f 10'
+    IF ( itime > 1 ) THEN
+       ncerr = nf90_inq_varid(fh, VNAME_ASO, v_aso)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_aso, ASO, start = (/ 1, itime/), &
+       count = (/ nopts, 1 /))
     if (ncerr .ne. 0) return
-    ncerr = nf90_put_var(fh, v_cao, CAO)
+    write(*,*) 'JDM f 11'
+    IF ( itime > 1 ) THEN
+       ncerr = nf90_inq_varid(fh, VNAME_CAO, v_cao)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_cao, CAO, start = (/ 1, itime/), &
+       count = (/ nopts, 1 /))
     if (ncerr .ne. 0) return
-    ncerr = nf90_put_var(fh, v_iceo, ICEO)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_put_var(fh, v_iceho, ICEHO)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_put_var(fh, v_icefo, ICEFO)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_put_var(fh, v_grdid, GRDID)
-    if (ncerr .ne. 0) return
-    ncerr = nf90_put_var(fh, v_spco, SPCO)
+    write(*,*) 'JDM f 11 b'
+    IF ( itime > 1 ) THEN
+       ncerr = nf90_inq_varid(fh, VNAME_CDO, v_cdo)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_cdo, CDO, start = (/ 1, itime/), &
+       count = (/ nopts, 1 /))
     if (ncerr .ne. 0) return
 
+
+    write(*,*) 'JDM f 12'
+    IF ( itime > 1 ) THEN
+       ncerr = nf90_inq_varid(fh, VNAME_ICEO, v_iceo)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_iceo, ICEO, start = (/ 1, itime/), &
+       count = (/ nopts, 1 /))
+    if (ncerr .ne. 0) return
+    write(*,*) 'JDM f 13'
+    IF ( itime > 1 ) THEN
+       ncerr = nf90_inq_varid(fh, VNAME_ICEHO, v_iceho)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_iceho, ICEHO, start = (/ 1, itime/), &
+       count = (/ nopts, 1 /))
+    if (ncerr .ne. 0) return
+    write(*,*) 'JDM f 14'
+    IF ( itime > 1 ) THEN
+       ncerr = nf90_inq_varid(fh, VNAME_ICEFO, v_icefo)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_icefo, ICEFO, start = (/ 1, itime/), &
+       count = (/ nopts, 1 /))
+    if (ncerr .ne. 0) return
+    write(*,*) 'JDM f 15'
+    write(*,*) 'GRDID:',GRDID
+    IF ( itime > 1 ) THEN
+       ncerr = nf90_inq_varid(fh, VNAME_GRDID, v_grdid)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_grdid, GRDID, start = (/ 1, 1, itime/), &
+       count = (/ 13, nopts, 1 /))
+    if (ncerr .ne. 0) return
+    write(*,*) 'JDM f 16'
+    IF ( itime > 1 ) THEN
+       ncerr = nf90_inq_varid(fh, VNAME_SPCO, v_spco)
+       if (ncerr .ne. 0) return
+    END IF
+    ncerr = nf90_put_var(fh, v_spco, SPCO, start = (/ 1, 1, itime/), &
+       count = (/nspec, nopts, 1 /))
+    if (ncerr .ne. 0) return
+
+    write(*,*) 'JDM g'
     ! Close the file.
     ncerr = nf90_close(fh)
     if (ncerr .ne. 0) return
@@ -1518,9 +1722,16 @@ CONTAINS
     INTEGER, INTENT(IN), OPTIONAL :: NDSOA
 #endif
 
+    CHARACTER(LEN=15) :: TIMETAG
     INTEGER :: IGRD, MK, MTH
     character(len = 124) :: filename
     integer :: ncerr
+
+#ifdef W3_S
+    CALL STRACE (IENT, 'W3IOPON')
+#endif
+    ! IPASS essentially is the time variable dimension 
+    IPASS  = IPASS + 1
 
     ! Optimistically assume success.
     IOTST = 0
@@ -1540,32 +1751,52 @@ CONTAINS
     IF (INXOUT .NE. 'READ' .AND. INXOUT .NE. 'WRITE') THEN
       WRITE (NDSE, 900) INXOUT
       CALL EXTCDE(1)
-   END IF
+    END IF
 
-   ! Determine filename.
-   filename = ''
-   filename = transfer(FNMPRE(:LEN_TRIM(FNMPRE))//'out_pnt_nc.'//FILEXT(:LEN_TRIM(FILEXT)), filename)
-   !print *, filename
-   
-   ! Do a read or a write of the point file.
-   IF (INXOUT .EQ. 'READ') THEN
+!JDM Not sure this next section is really needed in the necdf context,
+!commenting out but leaving it as a placeholder for now 
+
+!    ! Ensure read/write are not mixed 
+!    IF ( IPASS.EQ.1  .AND. OFILES(2) .EQ. 0 ) THEN
+!      WRITE  = INXOUT.EQ.'WRITE'
+!    ELSE
+!      IF ( WRITE .AND. INXOUT.EQ.'READ' ) THEN
+!        WRITE (NDSE,901) INXOUT
+!        CALL EXTCDE ( 2 )
+!      END IF
+!    END IF
+
+    ! Determine filename.
+    filename = ''
+    IF ( OFILES(2) .EQ. 1 ) THEN 
+      ! Create TIMETAG for file name using YYYYMMDD.HHMMS prefix
+      WRITE(TIMETAG,"(i8.8,'.'i6.6)")TIME(1),TIME(2)
+      filename = transfer(FNMPRE(:LEN_TRIM(FNMPRE))//TIMETAG//'out_pnt.'//FILEXT(:LEN_TRIM(FILEXT))//'.nc', filename)
+    ELSE 
+      filename = transfer(FNMPRE(:LEN_TRIM(FNMPRE))//'out_pnt.'//FILEXT(:LEN_TRIM(FILEXT))//'.nc', filename)
+    END IF 
+
+    ! Do a read or a write of the point file.
+    IF (INXOUT .EQ. 'READ') THEN
       CALL W3IOPON_READ(IOTST, IMOD, filename, ncerr)
-   ELSE
+    ELSE
       CALL W3IOPON_WRITE(OFILES(2), IMOD, filename, ncerr)
-   ENDIF
-   if (ncerr .ne. 0) then
+    ENDIF
+    if (ncerr .ne. 0) then
       print *, nf90_strerror(ncerr)
-      CALL EXTCDE(21)      
-   endif
-   
+      CALL EXTCDE(21)
+    endif
+
     !/
     !/ End of W3IOPON ----------------------------------------------------- /
     !/
 
 900 FORMAT (/' *** WAVEWATCH III ERROR IN W3IOPO :'/                &
          '     ILEGAL INXOUT VALUE: ',A/)
+901 FORMAT (/' *** WAVEWATCH III ERROR IN W3IOPO :'/                &
+         '     MIXED READ/WRITE, LAST REQUEST: ',A/)
   END SUBROUTINE W3IOPON
- 
+
   !/ ------------------------------------------------------------------- /
   !> Read or write point output.
   !>
@@ -1588,12 +1819,12 @@ CONTAINS
   !> -------------|------|----------|--------
   !> 40 | character*40 | IDTST | ID string
   !> 4 | integer | VERTST | Model definition file version number
-  !> 4 | integer | NK | Dimension of frequency
-  !> 4 | integer | MTH | Directionality of the frequency
+  !> 4 | integer | NK | Number of discrete wavenumbers  
+  !> 4 | integer | NTH | Number of discrete directions. 
   !> 4 | integer | NOPTS | Number of output points.
   !> 8*NOPTS | integer(2,NOPTS) | PTLOC | Point locations
   !> 7*NOPTS | character*7 | PTNME | Point names
-  !> 8 | integer(2) | TIME | Time
+  !> 8 | integer(2) | TIME | Valid time
   !> reclen*NOPTS | * | * | records
   !>
   !> Each record contains:
@@ -1797,7 +2028,7 @@ CONTAINS
       CALL EXTCDE ( 1 )
     END IF
     !
-    !      IF ( IPASS.EQ.1 ) THEN
+    ! First pass to this file and we are only writing 1 file for all time     
     IF ( IPASS.EQ.1  .AND. OFILES(2) .EQ. 0) THEN
       WRITE  = INXOUT.EQ.'WRITE'
     ELSE
@@ -1810,10 +2041,10 @@ CONTAINS
     ! open file ---------------------------------------------------------- *
     !
     IF ( IPASS.EQ.1 .AND. OFILES(2) .EQ. 0 ) THEN
-      !
+
       I      = LEN_TRIM(FILEXT)
       J      = LEN_TRIM(FNMPRE)
-      !
+
 #ifdef W3_T
       WRITE (NDST,9001) FNMPRE(:J)//'out_pnt.'//FILEXT(:I)
 #endif
@@ -1932,7 +2163,7 @@ CONTAINS
       !
       IF ( WRITE ) THEN
         WRITE (NDSOP)                                           &
-             IDSTR, VEROPT, NK, NTH, NOPTS
+            IDSTR, VEROPT, NK, NTH, NOPTS
 #ifdef W3_ASCII
         WRITE (NDSOA,*)                                           &
              'IDSTR, VEROPT, NK, NTH, NOPTS:',                  &
@@ -1954,6 +2185,7 @@ CONTAINS
           WRITE (NDSE,904) MK, MTH, NK, NTH
           CALL EXTCDE ( 12 )
         END IF
+        !JDM: what is this???? 
         IF ( .NOT. O2INIT )                                     &
              CALL W3DMO2 ( IGRD, NDSE, NDST, NOPTS )
       END IF

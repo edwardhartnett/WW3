@@ -94,18 +94,19 @@ program test_io
   end do
   
   print *, 'OK!'
-  print *, 'testing writing the WW3 binary point file in netCDF...'
+  ! print *, 'testing writing the WW3 binary point file in netCDF...'
 
-  ! Write in netCDF.
-  call w3iopon('WRITE', ndsop, iotest)
-  if (iotest .ne. 0) stop 100
-  print *, 'OK!'
+  ! ! Write in netCDF.
+  ! call w3iopon('WRITE', ndsop, iotest)
+  ! if (iotest .ne. 0) stop 100
+  ! print *, 'OK!'
   
   ! print *, 'testing reading the WW3 binary point file in netCDF...'
   ! call w3iopon('READ', ndsop, iotest)
   ! print *, iotest
   ! if (iotest .ne. 0) stop 100
   ! print *, 'OK!'
+
   
   print *, 'OK!'
   

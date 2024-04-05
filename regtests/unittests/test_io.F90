@@ -102,7 +102,7 @@ program test_io
   if (iotest .ne. 0) stop 100
   print *, 'OK!'
   
-  ! print *, 'testing reading the WW3 binary point file in netCDF...'
+  print *, 'testing reading the WW3 binary point file in netCDF...'
   ! call w3iopon('READ', ndsop, iotest)
   ! print *, iotest
   ! if (iotest .ne. 0) stop 100

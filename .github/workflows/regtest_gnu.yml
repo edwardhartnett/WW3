@@ -114,7 +114,7 @@ jobs:
           cd work_PR1_MPI
           pwd
           ls -l
-          /usr/local/netcdf-c-4.9.3-dev/bin/ncdump -h out_pnt.ww3.nc > ncdump_out.txt
+          ncdump -h out_pnt.ww3.nc > ncdump_out.txt
           cat ncdump_out.txt
           pwd
           cat ${GITHUB_WORKSPACE}/ww3/regtests/ww3_tp2.5/out_pnt_ncdump.txt

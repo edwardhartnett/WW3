@@ -111,8 +111,6 @@ jobs:
           ./bin/run_cmake_test -o all -S -T -s PR1_MPI -w work_PR1_MPI -f -p mpirun -n 24 ../model ww3_tp2.5
           cd ww3_tp2.5
           ls -l
-          cd ww3_tp2.5
-          ls -l
           cd work_PR1_MPI
           pwd
           ls -l

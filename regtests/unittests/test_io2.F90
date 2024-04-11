@@ -99,6 +99,7 @@ program test_io
   print *, 'testing writing the WW3 binary point file in netCDF...'
 
   ! Write in netCDF.
+  ofiles(2) = 1
   call w3iopon('WRITE', ndsop, iotest, imod)
   if (iotest .ne. 0) stop 100
   print *, 'OK!'

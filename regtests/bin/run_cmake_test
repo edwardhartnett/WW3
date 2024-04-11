@@ -1901,7 +1901,6 @@ do
 done # end of loop on progs
 
 # 3.h Point output ---------------------------------------------------------- #
-set -x
 
 case $outopt in
   native) out_progs="ww3_outp" ;;
@@ -2130,7 +2129,8 @@ do
         then # Add time counter if -T
           Tstart=`date +"%s.%2N"`
         fi
-
+	echo `pwd`
+	echo "$path_e/$prog"
         if $path_e/$prog > $ofile
         then
           \rm -f $prog.inp

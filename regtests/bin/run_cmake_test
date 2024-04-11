@@ -25,6 +25,8 @@
 #    looks for wind_gfs_30m.ww3 where it should look for wind.ww3. Another
 #    loop is needed to make this work.
 
+set -x
+
 # --------------------------------------------------------------------------- #
 # 1. Function definitions                                                     #
 # --------------------------------------------------------------------------- #

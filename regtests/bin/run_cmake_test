@@ -25,8 +25,6 @@
 #    looks for wind_gfs_30m.ww3 where it should look for wind.ww3. Another
 #    loop is needed to make this work.
 
-set -x
-
 # --------------------------------------------------------------------------- #
 # 1. Function definitions                                                     #
 # --------------------------------------------------------------------------- #
@@ -1903,6 +1901,7 @@ do
 done # end of loop on progs
 
 # 3.h Point output ---------------------------------------------------------- #
+set -x
 
 case $outopt in
   native) out_progs="ww3_outp" ;;

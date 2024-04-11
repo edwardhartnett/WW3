@@ -1343,7 +1343,7 @@ CONTAINS
   !>
   !> @author Edward Hartnett  @date 1-Nov-2023
   !>
-  SUBROUTINE W3IOPON_WRITE(timestep_only, IMOD, filename, ncerr)
+  SUBROUTINE W3IOPON_WRITE(timestep_only, IMOD, filename, fh, ncerr)
     use netcdf
     USE W3GDATMD, ONLY: NTH, NK, NSPEC, FILEXT
     USE W3WDATMD, ONLY: TIME
@@ -1362,15 +1362,14 @@ CONTAINS
     integer, intent(in) :: timestep_only ! 1 if only timestep should be written.
     INTEGER, INTENT(IN) :: IMOD
     character(*), intent(in) :: filename
+    integer, intent(inout) :: fh
     integer, intent(inout) :: ncerr
-    integer :: fh, ndim, nvar, fmt, itime 
+    integer :: ndim, nvar, fmt, itime 
     integer :: d_nopts, d_nspec, d_vsize, d_namelen, d_grdidlen, d_time
     integer :: v_idtst, v_vertst, v_nk, v_nth, v_ptloc, v_ptnme, v_time
     integer :: v_iw, v_ii, v_il, v_dpo, v_wao, v_wdo, v_tauao
     integer :: v_taido, v_dairo, v_zet_seto, v_aso, v_cao, v_cdo, v_iceo
     integer :: v_iceho, v_icefo, v_grdid, v_spco
-!!JDM - defined in module above    CHARACTER(LEN=31), PARAMETER :: IDSTR = 'WAVEWATCH III POINT OUTPUT FILE'
-!!JDM - defined in module above    CHARACTER(LEN=10), PARAMETER :: VEROPT = '2021-04-06'
 
     write(*,*) 'JDM in write', IPASS, timestep_only
     !If first pass, or if you are writting a file for every time-step: 
@@ -1478,8 +1477,8 @@ CONTAINS
       
     ELSE 
       write(*,*) 'JDM else'
-      ncerr = nf90_open(filename, nf90_write, fh)
-      if (ncerr .ne. 0) return
+      ! ncerr = nf90_open(filename, nf90_write, fh)
+      ! if (ncerr .ne. 0) return
     END IF 
 
      IF ( timestep_only.EQ.1 ) THEN
@@ -1715,7 +1714,7 @@ CONTAINS
     IMPLICIT NONE
 
     CHARACTER, INTENT(IN)         :: INXOUT*(*)
-    INTEGER, INTENT(IN)           :: NDSOP
+    INTEGER, INTENT(INOUT)           :: NDSOP
     INTEGER, INTENT(OUT)          :: IOTST
     INTEGER, INTENT(IN), OPTIONAL :: IMOD
 #ifdef W3_ASCII
@@ -1780,7 +1779,7 @@ CONTAINS
     IF (INXOUT .EQ. 'READ') THEN
       CALL W3IOPON_READ(IOTST, IMOD, filename, ncerr)
     ELSE
-      CALL W3IOPON_WRITE(OFILES(2), IMOD, filename, ncerr)
+      CALL W3IOPON_WRITE(OFILES(2), IMOD, filename, ndsop, ncerr)
     ENDIF
     if (ncerr .ne. 0) then
       print *, nf90_strerror(ncerr)
@@ -1862,7 +1861,9 @@ CONTAINS
   !>
   !> @param[in] INXOUT String indicating read/write. Must be 'READ' or
   !> 'WRITE'.
-  !> @param[in] NDSOP File unit number.
+  !> @param[in] NDSOP This is set by this subroutine to the netCDF
+  !> file ID (ncid) of the opened file. User does not have to
+  !> initialize this value, and should not change it.
   !> @param[out] IOTST Error code:
   !> - 0 No error.
   !> - -1 Unexpected end of file when reading.

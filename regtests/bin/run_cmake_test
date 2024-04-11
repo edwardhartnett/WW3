@@ -2129,7 +2129,8 @@ do
         then # Add time counter if -T
           Tstart=`date +"%s.%2N"`
         fi
-	echo `pwd`
+	my_pwd=`pwd`
+	echo "my pwd ${my_pwd}"
 	echo "$path_e/$prog"
         if $path_e/$prog > $ofile
         then

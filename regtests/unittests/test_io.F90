@@ -35,6 +35,7 @@ program test_io
   ndsbul = 0
   ndstrc =  6
   ntrace = 10
+  imod = 1
 
   write (ndso,900)
 900 FORMAT (/15X,'    *** WAVEWATCH III Point output post.***    '/ &

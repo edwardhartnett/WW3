@@ -35,6 +35,7 @@ program test_io
   ndsbul = 0
   ndstrc =  6
   ntrace = 10
+  imod = 1
 
   write (ndso,900)
 900 FORMAT (/15X,'    *** WAVEWATCH III Point output post.***    '/ &
@@ -98,6 +99,11 @@ program test_io
   print *, 'testing writing the WW3 binary point file in netCDF...'
 
   ! Write in netCDF.
+  call w3iopon('WRITE', ndsop, iotest, imod)
+  if (iotest .ne. 0) stop 100
+  print *, 'OK!'
+  
+  ! Another timestep in netCDF.
   call w3iopon('WRITE', ndsop, iotest, imod)
   if (iotest .ne. 0) stop 100
   print *, 'OK!'

@@ -1343,7 +1343,7 @@ CONTAINS
   !>
   !> @author Edward Hartnett  @date 1-Nov-2023
   !>
-  SUBROUTINE W3IOPON_WRITE(timestep_only, IMOD, filename, fh, ncerr)
+  SUBROUTINE W3IOPON_WRITE(timestep_only, IMOD, filename, ncerr)
     use netcdf
     USE W3GDATMD, ONLY: NTH, NK, NSPEC, FILEXT
     USE W3WDATMD, ONLY: TIME
@@ -1362,9 +1362,8 @@ CONTAINS
     integer, intent(in) :: timestep_only ! 1 if only timestep should be written.
     INTEGER, INTENT(IN) :: IMOD
     character(*), intent(in) :: filename
-    integer, intent(inout) :: fh
     integer, intent(inout) :: ncerr
-    integer :: ndim, nvar, fmt, itime 
+    integer :: ndim, nvar, fmt, itime, fh
     integer :: d_nopts, d_nspec, d_vsize, d_namelen, d_grdidlen, d_time
     integer :: v_idtst, v_vertst, v_nk, v_nth, v_ptloc, v_ptnme, v_time
     integer :: v_iw, v_ii, v_il, v_dpo, v_wao, v_wdo, v_tauao
@@ -1477,8 +1476,8 @@ CONTAINS
       
     ELSE 
       write(*,*) 'JDM else'
-      ! ncerr = nf90_open(filename, nf90_write, fh)
-      ! if (ncerr .ne. 0) return
+      ncerr = nf90_open(filename, nf90_write, fh)
+      if (ncerr .ne. 0) return
     END IF 
 
      IF ( timestep_only.EQ.1 ) THEN
@@ -1779,7 +1778,7 @@ CONTAINS
     IF (INXOUT .EQ. 'READ') THEN
       CALL W3IOPON_READ(IOTST, IMOD, filename, ncerr)
     ELSE
-      CALL W3IOPON_WRITE(OFILES(2), IMOD, filename, ndsop, ncerr)
+      CALL W3IOPON_WRITE(OFILES(2), IMOD, filename, ncerr)
     ENDIF
     if (ncerr .ne. 0) then
       print *, nf90_strerror(ncerr)

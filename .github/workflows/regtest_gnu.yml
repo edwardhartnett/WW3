@@ -122,8 +122,8 @@ jobs:
           cat ${GITHUB_WORKSPACE}/ww3/regtests/ww3_tp2.5/out_pnt_ncdump.txt
           cmp ${GITHUB_WORKSPACE}/ww3/regtests/ww3_tp2.5/out_pnt_ncdump.txt ncdump_out.txt          
         
-      - name: cache-env
-        id: cache-env
+      - name: cache-data
+        id: cache-data
         uses: actions/cache@v3
         with:
           path: ww3/ww3_from_ftp.v7.14.1.tar.gz

@@ -62,8 +62,6 @@ fi
 cd $ww3dir
 
 #Download from ftp (if not already present) and uptar:
-echo -e `pwd`
-echo -e `ls -l ww3_from_ftp.${ww3ver}.tar.gz`
 echo -e "Downloading (or finding) and untaring file from ftp:"
 if ! test -f ww3_from_ftp.${ww3ver}.tar.gz; then
   wget --no-check-certificate https://ftp.emc.ncep.noaa.gov/static_files/public/WW3/ww3_from_ftp.${ww3ver}.tar.gz

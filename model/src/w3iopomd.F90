@@ -1230,8 +1230,10 @@ CONTAINS
       endif
       ncerr = nf90_inq_varid(fh, VNAME_PTNME, v_ptnme)
       if (ncerr .ne. 0) return
-      ncerr = nf90_get_var(fh, v_ptnme, PTNME)
-      if (ncerr .ne. 0) return
+      if (associated(PTNME)) then
+         ncerr = nf90_get_var(fh, v_ptnme, PTNME)
+         if (ncerr .ne. 0) return
+      endif
     END IF
 
     !missing variable TIME??? 

@@ -211,6 +211,10 @@ MODULE W3IOPOMD
   !> Variable name for the netCDF point output file, for SPCO.
   character(*), parameter, private :: VNAME_SPCO = 'SPCO'
 
+  !> Error code returned by netCDF I/O function.
+  integer, parameter, private :: ERROR_NETCDF = 99
+  
+
   !/
 CONTAINS
   !/ ------------------------------------------------------------------- /
@@ -1117,6 +1121,23 @@ CONTAINS
     !/
   END SUBROUTINE W3IOPE
 
+  !> Call a netCDF function and handle return code.
+  !>
+  !> @param errcode NetCDF error code. 0 for no error.
+  !>
+  !> @author Edward Hartnett  @date 1-Nov-2023
+  !>
+  integer function nf90(errcode)
+    use netcdf
+    implicit none
+    integer, intent(in) :: errcode
+    
+    if(errcode /= nf90_noerr) then
+       print *, 'Error: ', trim(nf90_strerror(errcode))
+       return ERROR_NETCDF
+    endif
+  end function nf90
+
   !> Read point output in netCDF format.
   !>
   !> @param[out] IOTST Test indictor for reading.
@@ -1159,8 +1180,7 @@ CONTAINS
     IOTST = 0
     IF ( IPASS.EQ.1 ) THEN 
       ! Open the netCDF file.
-      ncerr = nf90_open(filename, NF90_NOWRITE, fh)
-      if (ncerr .ne. 0) return
+      if (nf90(nf90_open(filename, NF90_NOWRITE, fh)) .ne. 0) return
 
       ! Read and check the version: 
       ! TO DO add reading of IDTST and VERTST and make checks: 
@@ -1224,12 +1244,16 @@ CONTAINS
       ! Read vars with nopts as a dimension.
       ncerr = nf90_inq_varid(fh, VNAME_PTLOC, v_ptloc)
       if (ncerr .ne. 0) return
-      ncerr = nf90_get_var(fh, v_ptloc, PTLOC)
-      if (ncerr .ne. 0) return
+      if (associated(PTLOC)) then
+         ncerr = nf90_get_var(fh, v_ptloc, PTLOC)
+         if (ncerr .ne. 0) return
+      endif
       ncerr = nf90_inq_varid(fh, VNAME_PTNME, v_ptnme)
       if (ncerr .ne. 0) return
-      ncerr = nf90_get_var(fh, v_ptnme, PTNME)
-      if (ncerr .ne. 0) return
+      if (associated(PTNME)) then
+         ncerr = nf90_get_var(fh, v_ptnme, PTNME)
+         if (ncerr .ne. 0) return
+      endif
     END IF
 
     !missing variable TIME??? 
@@ -1363,14 +1387,12 @@ CONTAINS
     INTEGER, INTENT(IN) :: IMOD
     character(*), intent(in) :: filename
     integer, intent(inout) :: ncerr
-    integer :: fh, ndim, nvar, fmt, itime 
+    integer :: ndim, nvar, fmt, itime, fh
     integer :: d_nopts, d_nspec, d_vsize, d_namelen, d_grdidlen, d_time
     integer :: v_idtst, v_vertst, v_nk, v_nth, v_ptloc, v_ptnme, v_time
     integer :: v_iw, v_ii, v_il, v_dpo, v_wao, v_wdo, v_tauao
     integer :: v_taido, v_dairo, v_zet_seto, v_aso, v_cao, v_cdo, v_iceo
     integer :: v_iceho, v_icefo, v_grdid, v_spco
-!!JDM - defined in module above    CHARACTER(LEN=31), PARAMETER :: IDSTR = 'WAVEWATCH III POINT OUTPUT FILE'
-!!JDM - defined in module above    CHARACTER(LEN=10), PARAMETER :: VEROPT = '2021-04-06'
 
     write(*,*) 'JDM in write', IPASS, timestep_only
     !If first pass, or if you are writting a file for every time-step: 
@@ -1670,7 +1692,19 @@ CONTAINS
 
   END SUBROUTINE W3IOPON_WRITE
 
-  !> Read/write point output in netCDF format.
+  !> Read or write the netCDF point output file,
+  !> depending on the value of the first parameter.
+  !>
+  !> When reading, the entire file is read with one call to this
+  !> subroutine.
+  !>
+  !> When writing, this subroutine can either write one timestep or
+  !> the whole model run. This is an option in the input file. If the
+  !> entire model run is to be written, then OFILES(2) is 0. If only
+  !> one timestep is to be written, then OFILES(2) is 1.
+  !>
+  !> If OFILES(2) is 0, the output file is names out_pnt.ww3. If
+  !> OFILES(2) is 1, the output file is named TIMETAG.out_pnt.ww3.
   !>
   !> @param[in] INXOUT String indicating read/write. Must be 'READ' or
   !> 'WRITE'.
@@ -1715,7 +1749,7 @@ CONTAINS
     IMPLICIT NONE
 
     CHARACTER, INTENT(IN)         :: INXOUT*(*)
-    INTEGER, INTENT(IN)           :: NDSOP
+    INTEGER, INTENT(INOUT)           :: NDSOP
     INTEGER, INTENT(OUT)          :: IOTST
     INTEGER, INTENT(IN), OPTIONAL :: IMOD
 #ifdef W3_ASCII
@@ -1862,7 +1896,9 @@ CONTAINS
   !>
   !> @param[in] INXOUT String indicating read/write. Must be 'READ' or
   !> 'WRITE'.
-  !> @param[in] NDSOP File unit number.
+  !> @param[in] NDSOP This is set by this subroutine to the netCDF
+  !> file ID (ncid) of the opened file. User does not have to
+  !> initialize this value, and should not change it.
   !> @param[out] IOTST Error code:
   !> - 0 No error.
   !> - -1 Unexpected end of file when reading.

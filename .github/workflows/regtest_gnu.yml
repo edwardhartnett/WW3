@@ -106,8 +106,10 @@ jobs:
           export LD_LIBRARY_PATH="/home/runner/work/WW3/WW3/spack/var/spack/environments/ww3-gnu/.spack-env/view/:$LD_LIBRARY_PATH"
           cmake -DSWITCH=${GITHUB_WORKSPACE}/ww3/regtests/unittests/data/switch.io -DCMAKE_BUILD_TYPE=Debug ..
           make -j2 VERBOSE=1
-          ${GITHUB_WORKSPACE}/ww3/model/bin/ww3_from_ftp.sh          
-          cd ${GITHUB_WORKSPACE}/ww3/regtests
+          cd ${GITHUB_WORKSPACE}/ww3
+          ls -l
+          ${GITHUB_WORKSPACE}/ww3/model/bin/ww3_from_ftp.sh -k
+          cd regtests
           ./bin/run_cmake_test -o all -S -T -s PR1_MPI -w work_PR1_MPI -f -p mpirun -n 24 ../model ww3_tp2.5
           cd ww3_tp2.5
           ls -l
@@ -120,6 +122,12 @@ jobs:
           cat ${GITHUB_WORKSPACE}/ww3/regtests/ww3_tp2.5/out_pnt_ncdump.txt
           cmp ${GITHUB_WORKSPACE}/ww3/regtests/ww3_tp2.5/out_pnt_ncdump.txt ncdump_out.txt          
         
+      - name: cache-data
+        id: cache-data
+        uses: actions/cache@v3
+        with:
+          path: ww3/ww3_from_ftp.v7.14.1.tar.gz
+          key: ww3_from_ftp.v7.14.1
 
 
       

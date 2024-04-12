@@ -1134,7 +1134,8 @@ CONTAINS
     
     if(errcode /= nf90_noerr) then
        print *, 'Error: ', trim(nf90_strerror(errcode))
-       return ERROR_NETCDF
+       nf90 = ERROR_NETCDF
+       return 
     endif
   end function nf90
 

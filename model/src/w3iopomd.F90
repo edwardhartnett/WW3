@@ -211,6 +211,10 @@ MODULE W3IOPOMD
   !> Variable name for the netCDF point output file, for SPCO.
   character(*), parameter, private :: VNAME_SPCO = 'SPCO'
 
+  !> Error code returned by netCDF I/O function.
+  integer, parameter, private :: ERROR_NETCDF = 99
+  
+
   !/
 CONTAINS
   !/ ------------------------------------------------------------------- /
@@ -1117,6 +1121,23 @@ CONTAINS
     !/
   END SUBROUTINE W3IOPE
 
+  !> Call a netCDF function and handle return code.
+  !>
+  !> @param errcode NetCDF error code. 0 for no error.
+  !>
+  !> @author Edward Hartnett  @date 1-Nov-2023
+  !>
+  integer function nf90(errcode)
+    use netcdf
+    implicit none
+    integer, intent(in) :: errcode
+    
+    if(errcode /= nf90_noerr) then
+       print *, 'Error: ', trim(nf90_strerror(errcode))
+       return ERROR_NETCDF
+    endif
+  end function nf90
+
   !> Read point output in netCDF format.
   !>
   !> @param[out] IOTST Test indictor for reading.
@@ -1159,8 +1180,7 @@ CONTAINS
     IOTST = 0
     IF ( IPASS.EQ.1 ) THEN 
       ! Open the netCDF file.
-      ncerr = nf90_open(filename, NF90_NOWRITE, fh)
-      if (ncerr .ne. 0) return
+      if (nf90(nf90_open(filename, NF90_NOWRITE, fh)) .ne. 0) return
 
       ! Read and check the version: 
       ! TO DO add reading of IDTST and VERTST and make checks: 

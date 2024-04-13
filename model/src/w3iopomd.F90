@@ -1130,7 +1130,7 @@ CONTAINS
     
     if(errcode /= nf90_noerr) then
        print *, 'Error: ', trim(nf90_strerror(errcode))
-       nf90 = errcode
+       nf90_err = errcode
        return 
     endif
   end function nf90_err

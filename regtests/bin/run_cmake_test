@@ -39,6 +39,7 @@ errmsg ()
     shift
   done
   echo "" 2>&1
+  exit 99
 }
 
 # 1.b Usage function

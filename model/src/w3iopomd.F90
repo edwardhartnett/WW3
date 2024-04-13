@@ -1117,7 +1117,7 @@ CONTAINS
     !/
   END SUBROUTINE W3IOPE
 
-  !> Call a netCDF function and handle return code.
+  !> Handle netCDF return code.
   !>
   !> @param errcode NetCDF error code. 0 for no error.
   !>

@@ -1258,102 +1258,81 @@ CONTAINS
 
     ! All of the below variables are missing the "time" dimension... 
     ! the time dimension being read should be for "IPASS" 
-    ncerr = nf90_inq_varid(fh, VNAME_IW, v_iw, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_inq_varid(fh, VNAME_IW, v_iw)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_get_var(fh, v_iw, IW, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_get_var(fh, v_iw, IW)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_inq_varid(fh, VNAME_II, v_ii, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_inq_varid(fh, VNAME_II, v_ii)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_get_var(fh, v_ii, II, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_get_var(fh, v_ii, II)
     if (nf90_err(ncerr) .ne. 0) return
     ncerr = nf90_inq_varid(fh, VNAME_IL, v_il)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_get_var(fh, v_il, IL, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_get_var(fh, v_il, IL)
     if (nf90_err(ncerr) .ne. 0) return
     ncerr = nf90_inq_varid(fh, VNAME_DPO, v_dpo)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_get_var(fh, v_dpo, DPO, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_get_var(fh, v_dpo, DPO)
     if (nf90_err(ncerr) .ne. 0) return
     ncerr = nf90_inq_varid(fh, VNAME_WAO, v_wao)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_get_var(fh, v_wao, WAO, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_get_var(fh, v_wao, WAO)
     if (nf90_err(ncerr) .ne. 0) return
     ncerr = nf90_inq_varid(fh, VNAME_WDO, v_wdo)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_get_var(fh, v_wdo, WDO, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_get_var(fh, v_wdo, WDO)
     if (nf90_err(ncerr) .ne. 0) return
 #ifdef W3_FLX5
     ncerr = nf90_inq_varid(fh, VNAME_TAUAO, v_tauao)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_get_var(fh, v_tauao, TAUAO, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_get_var(fh, v_tauao, TAUAO)
     if (nf90_err(ncerr) .ne. 0) return
     ncerr = nf90_inq_varid(fh, VNAME_TAIDO, v_taido)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_get_var(fh, v_taido, TAIDO, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_get_var(fh, v_taido, TAIDO)
     if (nf90_err(ncerr) .ne. 0) return
     ncerr = nf90_inq_varid(fh, VNAME_DAIRO, v_dairo)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_get_var(fh, v_dairo, DAIRO, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_get_var(fh, v_dairo, DAIRO)
     if (nf90_err(ncerr) .ne. 0) return
 #endif
 #ifdef W3_SETUP
     ncerr = nf90_inq_varid(fh, ZET_SETO, v_zet_seto)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_get_var(fh, v_zet_seto, ZET_SETO, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_get_var(fh, v_zet_seto, ZET_SETO)
     if (nf90_err(ncerr) .ne. 0) return
 #endif
     ncerr = nf90_inq_varid(fh, VNAME_ASO, v_aso)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_get_var(fh, v_aso, ASO, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_get_var(fh, v_aso, ASO)
     if (nf90_err(ncerr) .ne. 0) return
     ncerr = nf90_inq_varid(fh, VNAME_CAO, v_cao)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_get_var(fh, v_cao, CAO, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_get_var(fh, v_cao, CAO)
     if (nf90_err(ncerr) .ne. 0) return
     ncerr = nf90_inq_varid(fh, VNAME_CDO, v_cdo)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_get_var(fh, v_cdo, CDO, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_get_var(fh, v_cdo, CDO)
     if (nf90_err(ncerr) .ne. 0) return
     ncerr = nf90_inq_varid(fh, VNAME_ICEO, v_iceo)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_get_var(fh, v_iceo, ICEO, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_get_var(fh, v_iceo, ICEO)
     if (nf90_err(ncerr) .ne. 0) return
     ncerr = nf90_inq_varid(fh, VNAME_ICEHO, v_iceho)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_get_var(fh, v_iceho, ICEHO, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_get_var(fh, v_iceho, ICEHO)
     if (nf90_err(ncerr) .ne. 0) return
     ncerr = nf90_inq_varid(fh, VNAME_ICEFO, v_icefo)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_get_var(fh, v_icefo, ICEFO, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_get_var(fh, v_icefo, ICEFO)
     if (nf90_err(ncerr) .ne. 0) return
     ncerr = nf90_inq_varid(fh, VNAME_GRDID, v_grdid)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_get_var(fh, v_grdid, GRDID, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_get_var(fh, v_grdid, GRDID)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_inq_varid(fh, VNAME_SPCO, v_spco, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_inq_varid(fh, VNAME_SPCO, v_spco)
     if (nf90_err(ncerr) .ne. 0) return
-    ncerr = nf90_get_var(fh, v_spco, SPCO, start = (/ 1, ipass/), &
-       count = (/ NOPTS, 1 /))
+    ncerr = nf90_get_var(fh, v_spco, SPCO)
     if (nf90_err(ncerr) .ne. 0) return
 
     ! Close the file.

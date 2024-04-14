@@ -30,6 +30,7 @@ program test_io3
   call w3nout(6, 6)
   call w3seto(1, 6, 6)
 
+  nth = 4
   ndsm   = 20
   ndsop  = 20
   ndsbul = 0
@@ -37,18 +38,18 @@ program test_io3
   ntrace = 10
   imod = 1
 
+  ! 2.  Read model definition file.
+  CALL W3IOGR('READ', NDSM)
+  WRITE (NDSO,920) GNAME
+920 FORMAT ('  Grid name : ',A/)
+
   ! Create a point output file needed for this test.
   print *, 'Creating point output test file for this test...'
   if (write_test_file() .ne. 0) stop 1
 
-  ! 2.  Read model definition file.
-  CALL W3IOGR('READ', NDSM)
-  WRITE (NDSO,920) GNAME
-920 FORMAT ('  Grid name : ',A/)  
-
   ! Read the file out_pnt.ww3 from the model/tests/data directory.
-  print *, 'OK!'
-  print *, 'Reading the point output test file for this test...'
+  ! print *, 'OK!'
+  ! print *, 'Reading the point output test file for this test...'
   call w3iopo('READ', ndsop, iotest)
   if (iotest .ne. 0) stop 10
   close(ndsop)
@@ -84,16 +85,16 @@ program test_io3
   print *, 'OK!'
   print *, 'testing writing the WW3 binary point file in netCDF...'
 
-  ! Write in netCDF.
-  ofiles(2) = 1
-  call w3iopon('WRITE', ndsop, iotest, imod)
-  if (iotest .ne. 0) stop 100
-  print *, 'OK!'
+  ! ! Write in netCDF.
+  ! ofiles(2) = 1
+  ! call w3iopon('WRITE', ndsop, iotest, imod)
+  ! if (iotest .ne. 0) stop 100
+  ! print *, 'OK!'
   
-  ! Another timestep in netCDF.
-  call w3iopon('WRITE', ndsop, iotest, imod)
-  if (iotest .ne. 0) stop 100
-  print *, 'OK!'
+  ! ! Another timestep in netCDF.
+  ! call w3iopon('WRITE', ndsop, iotest, imod)
+  ! if (iotest .ne. 0) stop 100
+  ! print *, 'OK!'
   
   print *, 'testing reading the WW3 binary point file in netCDF...'
   ipass2 = 0

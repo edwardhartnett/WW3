@@ -1145,7 +1145,7 @@ CONTAINS
   !>
   !> @author Edward Hartnett  @date 1-Nov-2023
   !>
-  SUBROUTINE W3IOPON_READ(IOTST, IMOD, filename, ncerr)
+  SUBROUTINE W3IOPON_READ(IOTST, IMOD_IN, filename, ncerr)
     USE NetCDF
     USE W3GDATMD, ONLY: NTH, NK, NSPEC, FILEXT
     USE W3ODATMD, ONLY: NDST, NDSE, IPASS => IPASS2, NOPTS, IPTINT, &
@@ -1162,7 +1162,7 @@ CONTAINS
     IMPLICIT NONE
 
     INTEGER, INTENT(OUT)          :: IOTST
-    INTEGER, INTENT(IN), OPTIONAL :: IMOD
+    INTEGER, INTENT(IN), OPTIONAL :: IMOD_IN
     character(*), intent(in) :: filename
     integer, intent(inout) :: ncerr
     INTEGER :: MK,MTH
@@ -1173,90 +1173,98 @@ CONTAINS
     integer :: v_iw, v_ii, v_il, v_dpo, v_wao, v_wdo, v_tauao
     integer :: v_taido, v_dairo, v_zet_seto, v_aso, v_cao, v_cdo, v_iceo
     integer :: v_iceho, v_icefo, v_grdid, v_spco
+    integer :: imod
+
+    if (present(IMOD_IN)) then
+       imod = imod_in
+    else
+       imod = 1
+    endif
 
     IOTST = 0
-    IF ( IPASS.EQ.1 ) THEN 
-      ! Open the netCDF file.
-      ncerr = nf90_open(filename, NF90_NOWRITE, fh)
-      if (nf90_err(ncerr) .ne. 0) return
 
-      ! Read and check the version: 
-      ! TO DO add reading of IDTST and VERTST and make checks: 
-      !  IF ( IDTST .NE. IDSTR ) THEN
-      !    WRITE (NDSE,902) IDTST, IDSTR
-      !    CALL EXTCDE ( 10 )
-      !  END IF
-      !  IF ( VERTST .NE. VEROPT ) THEN
-      !    WRITE (NDSE,903) VERTST, VEROPT
-      !    CALL EXTCDE ( 11 )
-      !  END IF
+    print *, 'w3iopon_read'
+
+    ! Open the netCDF file.
+    ncerr = nf90_open(filename, NF90_NOWRITE, fh)
+    if (nf90_err(ncerr) .ne. 0) return
+
+    ! Read and check the version: 
+    ! TO DO add reading of IDTST and VERTST and make checks: 
+    !  IF ( IDTST .NE. IDSTR ) THEN
+    !    WRITE (NDSE,902) IDTST, IDSTR
+    !    CALL EXTCDE ( 10 )
+    !  END IF
+    !  IF ( VERTST .NE. VEROPT ) THEN
+    !    WRITE (NDSE,903) VERTST, VEROPT
+    !    CALL EXTCDE ( 11 )
+    !  END IF
 
 
-      ! Read the dimension information for NOPTS.
-      ncerr = nf90_inq_dimid(fh, DNAME_NOPTS, d_nopts)
-      if (nf90_err(ncerr) .ne. 0) return
-      ncerr = nf90_inquire_dimension(fh, d_nopts, len = d_nopts_len)
-      if (nf90_err(ncerr) .ne. 0) return
-      nopts = d_nopts_len
+    ! Read the dimension information for NOPTS.
+    ncerr = nf90_inq_dimid(fh, DNAME_NOPTS, d_nopts)
+    if (nf90_err(ncerr) .ne. 0) return
+    ncerr = nf90_inquire_dimension(fh, d_nopts, len = d_nopts_len)
+    if (nf90_err(ncerr) .ne. 0) return
+    nopts = d_nopts_len
 
-      ! Read the dimension information for NSPEC.
-      ncerr = nf90_inq_dimid(fh, DNAME_NSPEC, d_nspec)
-      if (nf90_err(ncerr) .ne. 0) return
-      ncerr = nf90_inquire_dimension(fh, d_nspec, len = d_nspec_len)
-      if (nf90_err(ncerr) .ne. 0) return
+    ! Read the dimension information for NSPEC.
+    ncerr = nf90_inq_dimid(fh, DNAME_NSPEC, d_nspec)
+    if (nf90_err(ncerr) .ne. 0) return
+    ncerr = nf90_inquire_dimension(fh, d_nspec, len = d_nspec_len)
+    if (nf90_err(ncerr) .ne. 0) return
 
-      ! Read the dimension information for VSIZE.
-      ncerr = nf90_inq_dimid(fh, DNAME_VSIZE, d_vsize)
-      if (nf90_err(ncerr) .ne. 0) return
-      ncerr = nf90_inquire_dimension(fh, d_vsize, len = d_vsize_len)
-      if (nf90_err(ncerr) .ne. 0) return
+    ! Read the dimension information for VSIZE.
+    ncerr = nf90_inq_dimid(fh, DNAME_VSIZE, d_vsize)
+    if (nf90_err(ncerr) .ne. 0) return
+    ncerr = nf90_inquire_dimension(fh, d_vsize, len = d_vsize_len)
+    if (nf90_err(ncerr) .ne. 0) return
 
-      ! Read the dimension information for NAMELEN.
-      ncerr = nf90_inq_dimid(fh, DNAME_NAMELEN, d_namelen)
-      if (nf90_err(ncerr) .ne. 0) return
-      ncerr = nf90_inquire_dimension(fh, d_namelen, len = d_namelen_len)
-      if (nf90_err(ncerr) .ne. 0) return
+    ! Read the dimension information for NAMELEN.
+    ncerr = nf90_inq_dimid(fh, DNAME_NAMELEN, d_namelen)
+    if (nf90_err(ncerr) .ne. 0) return
+    ncerr = nf90_inquire_dimension(fh, d_namelen, len = d_namelen_len)
+    if (nf90_err(ncerr) .ne. 0) return
 
-      ! Read the dimension information for GRDIDLEN.
-      ncerr = nf90_inq_dimid(fh, DNAME_GRDIDLEN, d_grdidlen)
-      if (nf90_err(ncerr) .ne. 0) return
-      ncerr = nf90_inquire_dimension(fh, d_grdidlen, len = d_grdidlen_len)
-      if (nf90_err(ncerr) .ne. 0) return
+    ! Read the dimension information for GRDIDLEN.
+    ncerr = nf90_inq_dimid(fh, DNAME_GRDIDLEN, d_grdidlen)
+    if (nf90_err(ncerr) .ne. 0) return
+    ncerr = nf90_inquire_dimension(fh, d_grdidlen, len = d_grdidlen_len)
+    if (nf90_err(ncerr) .ne. 0) return
 
-      ! Read scalar variables.
-      ncerr = nf90_inq_varid(fh, VNAME_NK, v_nk)
-      if (nf90_err(ncerr) .ne. 0) return
-      ncerr = nf90_get_var(fh, v_nk, MK)
-      if (nf90_err(ncerr) .ne. 0) return
-      ncerr = nf90_inq_varid(fh, VNAME_NTH, v_nth)
-      if (nf90_err(ncerr) .ne. 0) return
-      ncerr = nf90_get_var(fh, v_nth, MTH)
-      if (nf90_err(ncerr) .ne. 0) return
+    ! Read scalar variables.
+    ncerr = nf90_inq_varid(fh, VNAME_NK, v_nk)
+    if (nf90_err(ncerr) .ne. 0) return
+    ncerr = nf90_get_var(fh, v_nk, MK)
+    if (nf90_err(ncerr) .ne. 0) return
+    ncerr = nf90_inq_varid(fh, VNAME_NTH, v_nth)
+    if (nf90_err(ncerr) .ne. 0) return
+    ncerr = nf90_get_var(fh, v_nth, MTH)
+    if (nf90_err(ncerr) .ne. 0) return
 
-      !read in written variables NK, NTH as MK and MTH
-      !and ensure they match 
-      IF (NK.NE.MK .OR. NTH.NE.MTH) THEN
-        WRITE (NDSE,904) MK, MTH, NK, NTH
-        CALL EXTCDE ( 12 )
-      END IF
-
-      ! Initialize an individual data storage for point output.
-      if (.not. o2init) call w3dmo2(imod, ndse, ndst, nopts)
-
-      ! Read vars with nopts as a dimension.
-      ncerr = nf90_inq_varid(fh, VNAME_PTLOC, v_ptloc)
-      if (nf90_err(ncerr) .ne. 0) return
-      if (associated(PTLOC)) then
-         ncerr = nf90_get_var(fh, v_ptloc, PTLOC)
-         if (nf90_err(ncerr) .ne. 0) return
-      endif
-      ncerr = nf90_inq_varid(fh, VNAME_PTNME, v_ptnme)
-      if (nf90_err(ncerr) .ne. 0) return
-      if (associated(PTNME)) then
-         ncerr = nf90_get_var(fh, v_ptnme, PTNME)
-         if (nf90_err(ncerr) .ne. 0) return
-      endif
+    !read in written variables NK, NTH as MK and MTH
+    !and ensure they match 
+    IF (NK.NE.MK .OR. NTH.NE.MTH) THEN
+       WRITE (NDSE,904) MK, MTH, NK, NTH
+       CALL EXTCDE ( 12 )
     END IF
+
+    ! Initialize an individual data storage for point output.
+    if (.not. o2init) call w3dmo2(imod, ndse, ndst, nopts)
+
+    ! Read vars with nopts as a dimension.
+    ncerr = nf90_inq_varid(fh, VNAME_PTLOC, v_ptloc)
+    if (nf90_err(ncerr) .ne. 0) return
+    if (associated(PTLOC)) then
+       ncerr = nf90_get_var(fh, v_ptloc, PTLOC)
+       if (nf90_err(ncerr) .ne. 0) return
+    endif
+    ncerr = nf90_inq_varid(fh, VNAME_PTNME, v_ptnme)
+    if (nf90_err(ncerr) .ne. 0) return
+    if (associated(PTNME)) then
+       ncerr = nf90_get_var(fh, v_ptnme, PTNME)
+       if (nf90_err(ncerr) .ne. 0) return
+    endif
 
     !missing variable TIME??? 
 

@@ -1151,7 +1151,7 @@ CONTAINS
     USE W3ODATMD, ONLY: NDST, NDSE, IPASS => IPASS2, NOPTS, IPTINT, &
          IL, IW, II, PTLOC, PTIFAC, DPO, WAO, WDO,   &
          ASO, CAO, CDO, SPCO, PTNME, O2INIT, FNMPRE, &
-         GRDID, ICEO, ICEHO, ICEFO
+         GRDID, ICEO, ICEHO, ICEFO, W3DMO2
     USE W3SERVMD, ONLY: EXTCDE
 #ifdef W3_FLX5
     USE W3ODATMD, ONLY: TAUAO, TAUDO, DAIRO
@@ -1197,6 +1197,7 @@ CONTAINS
       if (nf90_err(ncerr) .ne. 0) return
       ncerr = nf90_inquire_dimension(fh, d_nopts, len = d_nopts_len)
       if (nf90_err(ncerr) .ne. 0) return
+      nopts = d_nopts_len
 
       ! Read the dimension information for NSPEC.
       ncerr = nf90_inq_dimid(fh, DNAME_NSPEC, d_nspec)
@@ -1238,6 +1239,9 @@ CONTAINS
         WRITE (NDSE,904) MK, MTH, NK, NTH
         CALL EXTCDE ( 12 )
       END IF
+
+      ! Initialize an individual data storage for point output.
+      if (.not. o2init) call w3dmo2(imod, ndse, ndst, nopts)
 
       ! Read vars with nopts as a dimension.
       ncerr = nf90_inq_varid(fh, VNAME_PTLOC, v_ptloc)
@@ -1865,8 +1869,8 @@ CONTAINS
 
 900 FORMAT (/' *** WAVEWATCH III ERROR IN W3IOPO :'/                &
          '     ILEGAL INXOUT VALUE: ',A/)
-901 FORMAT (/' *** WAVEWATCH III ERROR IN W3IOPO :'/                &
-         '     MIXED READ/WRITE, LAST REQUEST: ',A/)
+! 901 FORMAT (/' *** WAVEWATCH III ERROR IN W3IOPO :'/                &
+!          '     MIXED READ/WRITE, LAST REQUEST: ',A/)
   END SUBROUTINE W3IOPON
 
   !/ ------------------------------------------------------------------- /

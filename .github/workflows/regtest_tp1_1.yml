@@ -68,7 +68,7 @@ jobs:
           make VERBOSE=1
           cp -r ${GITHUB_WORKSPACE}/ww3/regtests/ww3_tp2.14/input/work_oasis3-mct ${GITHUB_WORKSPACE}
 
-  regtest_tp1.1:
+  regtest_tp1_1:
     needs: setup
     runs-on: ubuntu-latest
 

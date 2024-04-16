@@ -1,4 +1,4 @@
-name: regtest_gnu
+name: io_gnu
 on: [push, pull_request, workflow_dispatch]
 
 # Cancel in-progress workflows when pushing to a branch
@@ -68,7 +68,7 @@ jobs:
           make VERBOSE=1
           cp -r ${GITHUB_WORKSPACE}/ww3/regtests/ww3_tp2.14/input/work_oasis3-mct ${GITHUB_WORKSPACE}
 
-  regtest_gnu:
+  regtest_tp1.1:
     needs: setup
     runs-on: ubuntu-latest
 
@@ -92,7 +92,7 @@ jobs:
             ~/.spack
             work_oasis3-mct
           key: spack-${{ runner.os }}-${{ env.cache_key }}-${{ hashFiles('ww3/model/ci/spack_gnu.yaml') }}
-          
+
       - name: build-ww3
         run: |
           source spack/share/spack/setup-env.sh
@@ -102,32 +102,21 @@ jobs:
           export CC=mpicc
           export FC=mpif90
           export OASISDIR=${GITHUB_WORKSPACE}/work_oasis3-mct
-#          mkdir build && cd build
+          mkdir build && cd build
           export LD_LIBRARY_PATH="/home/runner/work/WW3/WW3/spack/var/spack/environments/ww3-gnu/.spack-env/view/:$LD_LIBRARY_PATH"
-#          cmake -DSWITCH=${GITHUB_WORKSPACE}/ww3/regtests/unittests/data/switch.io -DCMAKE_BUILD_TYPE=Debug ..
-#          make -j2 VERBOSE=1
-          cd ${GITHUB_WORKSPACE}/ww3
-          ls -l
-          ${GITHUB_WORKSPACE}/ww3/model/bin/ww3_from_ftp.sh -k
-          cd regtests
-          ./bin/run_cmake_test -o all -S -T -s PR1_MPI -w work_PR1_MPI -f -p mpirun -n 24 ../model ww3_tp2.5
-          cd ww3_tp2.5
-          ls -l
-          cd work_PR1_MPI
-          pwd
-          ls -l
-          ncdump -h out_pnt.ww3.nc > ncdump_out.txt
-          cat ncdump_out.txt
-          pwd
-          cat ${GITHUB_WORKSPACE}/ww3/regtests/ww3_tp2.5/out_pnt_ncdump.txt
-          cmp ${GITHUB_WORKSPACE}/ww3/regtests/ww3_tp2.5/out_pnt_ncdump.txt ncdump_out.txt          
+          cmake -DSWITCH=${GITHUB_WORKSPACE}/ww3/regtests/unittests/data/switch.io -DCMAKE_BUILD_TYPE=Debug -DCMAKE_Fortran_FLAGS="-g -fprofile-abs-path -fprofile-arcs -ftest-coverage -O0 -Wall -fno-omit-frame-pointer -fsanitize=address" -DCMAKE_C_FLAGS="-g -fprofile-abs-path -fprofile-arcs -ftest-coverage -O0 -Wall -fno-omit-frame-pointer -fsanitize=address" ..
+          make -j2 VERBOSE=1
+          ./bin/ww3_grid
+          mv mod_def.ww3 regtests/unittests
+          ctest --verbose --output-on-failure --rerun-failed
+          gcovr --root .. -v  --html-details --exclude ../regtests/unittests --exclude CMakeFiles --print-summary -o test-coverage.html &> /dev/null
         
-      - name: cache-data
-        id: cache-data
-        uses: actions/cache@v3
+      - name: upload-test-coverage
+        uses: actions/upload-artifact@v3
         with:
-          path: ww3/ww3_from_ftp.v7.14.1.tar.gz
-          key: ww3_from_ftp.v7.14.1
+          name: ww3-test-coverage
+          path: |
+            ww3/build/*.html
+            ww3/build/*.css
 
-
-      
+          

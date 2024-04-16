@@ -92,7 +92,6 @@ jobs:
             ~/.spack
             work_oasis3-mct
           key: spack-${{ runner.os }}-${{ env.cache_key }}-${{ hashFiles('ww3/model/ci/spack_gnu.yaml') }}
-          
       - name: build-ww3
         run: |
           source spack/share/spack/setup-env.sh

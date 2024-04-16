@@ -91,7 +91,7 @@ jobs:
             spack
             ~/.spack
             work_oasis3-mct
-          key: spack-1
+          key: spack-${{ runner.os }}-${{ env.cache_key }}-${{ hashFiles('ww3/model/ci/spack_gnu.yaml') }}
 
       - name: build-ww3
         run: |

@@ -42,6 +42,7 @@ copy_test_data_2(ww3_grid.inp ww3_grid.inp)
 unit_test(test_io_points_bin)
 unit_test(test_io)
 unit_test(test_io2)
+unit_test(test_io3)
 unit_test(test_io_restart_bin)
 
 

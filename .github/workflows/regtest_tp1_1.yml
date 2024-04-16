@@ -1,4 +1,4 @@
-name: io_gnu
+name: io_gnu1
 on: [push, pull_request, workflow_dispatch]
 
 # Cancel in-progress workflows when pushing to a branch
